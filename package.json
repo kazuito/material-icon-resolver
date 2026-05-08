@@ -1,0 +1,53 @@
+{
+	"name": "material-icon-resolver",
+	"version": "0.1.0",
+	"description": "Resolve VS Code Material Icon Theme icon names, SVG filenames, and CDN URLs from file or folder paths.",
+	"type": "module",
+	"types": "./dist/index.d.mts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.mts",
+			"import": "./dist/index.mjs"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"keywords": [
+		"material-icon-theme",
+		"icons",
+		"vscode",
+		"file-icons",
+		"folder-icons"
+	],
+	"license": "MIT",
+	"scripts": {
+		"build": "tsdown",
+		"generate": "tsx scripts/generate.ts",
+		"validate-icons": "tsx scripts/validate-icons.ts",
+		"test": "vitest run",
+		"typecheck": "tsc --noEmit",
+		"lint": "biome lint",
+		"format": "biome format --write"
+	},
+	"devEngines": {
+		"packageManager": {
+			"name": "pnpm",
+			"version": "^11.0.8",
+			"onFail": "download"
+		}
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		]
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.14",
+		"@types/node": "^25.6.0",
+		"tsdown": "^0.21.10",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.3",
+		"vitest": "^4.1.5"
+	}
+}
