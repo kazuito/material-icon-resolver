@@ -326,10 +326,22 @@ async function main() {
 
   const metadataTs =
     header +
+    "/**\n" +
+    " * Provenance of the bundled icon lookup tables.\n" +
+    " *\n" +
+    " * `upstreamVersion` is also the default `version` used when building CDN\n" +
+    " * URLs — it's the exact `material-icon-theme` release whose SVG inventory\n" +
+    " * the lookup tables were generated against. Pinning to it (rather than\n" +
+    " * `latest`) keeps resolved URLs and table entries in sync.\n" +
+    " */\n" +
     "export const metadata = {\n" +
+    `\t/** Upstream \`material-icon-theme\` release the tables were generated from. */\n` +
     `\tupstreamVersion: ${JSON.stringify(upstreamPkg.version)},\n` +
+    `\t/** Full git commit SHA of the upstream release tag. */\n` +
     `\tupstreamCommit: ${JSON.stringify(upstreamCommit)},\n` +
+    `\t/** Upstream GitHub repo, in \`owner/name\` form. */\n` +
     `\tupstreamRepo: ${JSON.stringify("material-extensions/vscode-material-icon-theme")},\n` +
+    `\t/** ISO 8601 timestamp of when these tables were generated. */\n` +
     `\tgeneratedAt: ${JSON.stringify(generatedAt)},\n` +
     "} as const;\n";
 
