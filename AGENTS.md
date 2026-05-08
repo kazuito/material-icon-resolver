@@ -10,7 +10,8 @@ Resolve VS Code Material Icon Theme icon names, SVG filenames, and CDN URLs from
 - `src/cdn.ts` — jsDelivr / unpkg / `baseUrl` URL builders
 - `src/types.ts` — public type definitions
 - `src/generated/*.ts` — **auto-generated; do not edit by hand**. Re-run `pnpm generate`.
-- `scripts/generate.ts` — pulls upstream `vscode-material-icon-theme` at the version tag and rebuilds `src/generated/*.ts`
+- `scripts/generate.ts` — reads upstream `vscode-material-icon-theme` from the `vendor/` git submodule and rebuilds `src/generated/*.ts`
+- `vendor/vscode-material-icon-theme/` — git submodule pinned to a specific upstream release tag; the source of truth for which version is generated
 - `scripts/validate-icons.ts` — fetches the published npm tarball and asserts every referenced SVG name actually exists
 - `test/` — vitest suites (file resolver, folder resolver, CDN URL)
 - `dist/` — tsdown output (`.mjs` + `.d.mts`); gitignored
@@ -19,11 +20,12 @@ Resolve VS Code Material Icon Theme icon names, SVG filenames, and CDN URLs from
 ## Commands
 
 ```bash
+git submodule update --init --recursive  # required before first generate
 pnpm install
 pnpm typecheck       # tsc --noEmit
 pnpm test            # vitest run
 pnpm build           # tsdown → dist/index.mjs + dist/index.d.mts
-pnpm generate        # regenerate src/generated/*.ts from upstream tag
+pnpm generate        # regenerate src/generated/*.ts from the pinned submodule
 pnpm validate-icons  # fetch npm tarball, check every referenced SVG exists
 pnpm lint            # biome lint
 pnpm format          # biome format --write
@@ -38,9 +40,11 @@ pnpm format          # biome format --write
 
 ## Generator Setup
 
-- Generator requires a local clone of `material-extensions/vscode-material-icon-theme`.
-- Default path: `~/dev/oss/vscode-material-icon-theme`. Override with `MATERIAL_ICON_THEME_REPO=/path/to/clone`.
-- Generator reads `<repo>/package.json` to get the upstream version, then runs `git worktree add --detach` at tag `v<version>`, imports `src/core/icons/{fileIcons,folderIcons}.ts` from that worktree, and removes the worktree on exit. **Do not point it at upstream `main`** — HEAD often contains unreleased icons whose SVGs aren't yet on the CDN. Override the ref with `MATERIAL_ICON_THEME_REF=<tag-or-sha>` only when you know what you're doing.
+- Upstream `material-extensions/vscode-material-icon-theme` lives as a git submodule at `vendor/vscode-material-icon-theme`, pinned to a specific release tag.
+- First time setup: `git submodule update --init --recursive`. Fresh clones should use `git clone --recurse-submodules ...`.
+- The generator imports `src/core/icons/{fileIcons,folderIcons,languageIcons}.ts` directly from the submodule's checked-out tree and records the submodule HEAD commit in `metadata.upstreamCommit`. No worktree is created.
+- To bump the upstream version: `cd vendor/vscode-material-icon-theme && git fetch --tags && git checkout v<new-version> && cd -`, then `git add vendor/vscode-material-icon-theme` and run `pnpm generate`. **Always pin to a release tag** — the submodule's `main` HEAD often contains unreleased icons whose SVGs aren't yet on the CDN.
+- `MATERIAL_ICON_THEME_REPO=/path/to/clone` is supported as an escape hatch (e.g. for testing against a local upstream working copy); when set, the script reads that path's HEAD instead of the submodule. Caller is responsible for checking out a sensible ref.
 
 ## Codebase Rules
 
