@@ -10,18 +10,15 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"includes": ["**", "!src/generated/**"]
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true
-		}
-	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
+		},
+		"includes": ["**", "!src/generated/**"]
 	},
 	"assist": {
 		"enabled": true,
@@ -29,6 +26,12 @@
 			"source": {
 				"organizeImports": "on"
 			}
+		},
+		"includes": ["**", "!src/generated/**"]
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
 		}
 	}
 }

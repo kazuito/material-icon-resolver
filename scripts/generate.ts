@@ -159,8 +159,7 @@ function buildFileMaps(
 			for (const raw of assoc.fileNames ?? []) {
 				const key = raw.toLowerCase();
 				if (key.includes("/")) {
-					if (!(key in fileNamesWithPath))
-						fileNamesWithPath[key] = icon.name;
+					if (!(key in fileNamesWithPath)) fileNamesWithPath[key] = icon.name;
 				} else if (!(key in fileNames)) {
 					fileNames[key] = icon.name;
 				}
