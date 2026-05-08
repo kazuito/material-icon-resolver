@@ -1,7 +1,7 @@
 {
   "name": "material-icon-resolver",
-  "version": "0.1.1",
-  "description": "Resolve VS Code Material Icon Theme icon names, SVG filenames, and CDN URLs from file or folder paths.",
+  "version": "0.1.2",
+  "description": "Resolve Material Icon Theme icon names, filenames, and CDN URLs from a file path, folder path, or language ID.",
   "author": "kazuito",
   "license": "MIT",
   "homepage": "https://github.com/kazuito/material-icon-resolver#readme",
