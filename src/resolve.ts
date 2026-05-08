@@ -1,167 +1,167 @@
 import { buildBaseUrl, buildCdnUrl } from "./cdn.ts";
 import {
-	defaultFile,
-	fileExtensions,
-	fileNames,
-	fileNamesWithPath,
-	languageIds,
+  defaultFile,
+  fileExtensions,
+  fileNames,
+  fileNamesWithPath,
+  languageIds,
 } from "./generated/file-icons.ts";
 import {
-	defaultFolder,
-	folderNames,
-	folderNamesExpanded,
-	rootFolderNames,
-	rootFolderNamesExpanded,
+  defaultFolder,
+  folderNames,
+  folderNamesExpanded,
+  rootFolderNames,
+  rootFolderNamesExpanded,
 } from "./generated/folder-icons.ts";
 import { metadata } from "./generated/metadata.ts";
 import {
-	getBasename,
-	getExtensionCandidates,
-	getParentName,
-	normalizePath,
+  getBasename,
+  getExtensionCandidates,
+  getParentName,
+  normalizePath,
 } from "./normalize.ts";
 import type {
-	ResolveByLanguageIdOptions,
-	ResolveMaterialIconOptions,
-	ResolveSource,
-	ResolvedMaterialIcon,
+  ResolveByLanguageIdOptions,
+  ResolvedMaterialIcon,
+  ResolveMaterialIconOptions,
+  ResolveSource,
 } from "./types.ts";
 
 type Hit = { name: string; source: ResolveSource };
 
 function lookupFile(path: string): Hit | null {
-	const normalized = normalizePath(path);
-	const basename = getBasename(normalized).toLowerCase();
-	const parent = getParentName(normalized).toLowerCase();
+  const normalized = normalizePath(path);
+  const basename = getBasename(normalized).toLowerCase();
+  const parent = getParentName(normalized).toLowerCase();
 
-	if (parent.length > 0) {
-		const key = `${parent}/${basename}`;
-		const hit = fileNamesWithPath[key];
-		if (hit) return { name: hit, source: "fileNamesWithPath" };
-	}
+  if (parent.length > 0) {
+    const key = `${parent}/${basename}`;
+    const hit = fileNamesWithPath[key];
+    if (hit) return { name: hit, source: "fileNamesWithPath" };
+  }
 
-	const nameHit = fileNames[basename];
-	if (nameHit) return { name: nameHit, source: "fileNames" };
+  const nameHit = fileNames[basename];
+  if (nameHit) return { name: nameHit, source: "fileNames" };
 
-	for (const ext of getExtensionCandidates(basename)) {
-		const extHit = fileExtensions[ext];
-		if (extHit) return { name: extHit, source: "fileExtensions" };
-	}
+  for (const ext of getExtensionCandidates(basename)) {
+    const extHit = fileExtensions[ext];
+    if (extHit) return { name: extHit, source: "fileExtensions" };
+  }
 
-	return null;
+  return null;
 }
 
 function lookupLanguageId(languageId: string): Hit | null {
-	const hit = languageIds[languageId.toLowerCase()];
-	return hit ? { name: hit, source: "languageIds" } : null;
+  const hit = languageIds[languageId.toLowerCase()];
+  return hit ? { name: hit, source: "languageIds" } : null;
 }
 
 function lookupFolder(path: string, open: boolean): Hit | null {
-	const normalized = normalizePath(path);
-	const basename = getBasename(normalized).toLowerCase();
-	if (basename.length === 0) return null;
+  const normalized = normalizePath(path);
+  const basename = getBasename(normalized).toLowerCase();
+  if (basename.length === 0) return null;
 
-	const rootMap = open ? rootFolderNamesExpanded : rootFolderNames;
-	const rootHit = rootMap[basename];
-	if (rootHit) return { name: rootHit, source: "rootFolderNames" };
+  const rootMap = open ? rootFolderNamesExpanded : rootFolderNames;
+  const rootHit = rootMap[basename];
+  if (rootHit) return { name: rootHit, source: "rootFolderNames" };
 
-	const folderMap = open ? folderNamesExpanded : folderNames;
-	const folderHit = folderMap[basename];
-	if (folderHit) return { name: folderHit, source: "folderNames" };
+  const folderMap = open ? folderNamesExpanded : folderNames;
+  const folderHit = folderMap[basename];
+  if (folderHit) return { name: folderHit, source: "folderNames" };
 
-	return null;
+  return null;
 }
 
 function makeResult(
-	hit: Hit,
-	type: "file" | "folder",
-	open: boolean,
-	options: ResolveMaterialIconOptions,
+  hit: Hit,
+  type: "file" | "folder",
+  open: boolean,
+  options: ResolveMaterialIconOptions,
 ): ResolvedMaterialIcon {
-	const filename =
-		type === "folder" && open ? `${hit.name}-open.svg` : `${hit.name}.svg`;
-	const version = options.version ?? metadata.upstreamVersion;
-	const cdnUrl = options.baseUrl
-		? buildBaseUrl(options.baseUrl, filename)
-		: buildCdnUrl({ cdn: options.cdn ?? "jsdelivr", version, filename });
-	return { name: hit.name, filename, cdnUrl, type, source: hit.source };
+  const filename =
+    type === "folder" && open ? `${hit.name}-open.svg` : `${hit.name}.svg`;
+  const version = options.version ?? metadata.upstreamVersion;
+  const cdnUrl = options.baseUrl
+    ? buildBaseUrl(options.baseUrl, filename)
+    : buildCdnUrl({ cdn: options.cdn ?? "jsdelivr", version, filename });
+  return { name: hit.name, filename, cdnUrl, type, source: hit.source };
 }
 
 export function resolveMaterialIcon(
-	path: string,
-	options?: ResolveMaterialIconOptions,
+  path: string,
+  options?: ResolveMaterialIconOptions,
 ): ResolvedMaterialIcon | null {
-	const opts = options ?? {};
-	const type = opts.type ?? "file";
-	const open = opts.open ?? false;
+  const opts = options ?? {};
+  const type = opts.type ?? "file";
+  const open = opts.open ?? false;
 
-	let hit = type === "file" ? lookupFile(path) : lookupFolder(path, open);
+  let hit = type === "file" ? lookupFile(path) : lookupFolder(path, open);
 
-	if (!hit && type === "file" && opts.languageId) {
-		hit = lookupLanguageId(opts.languageId);
-	}
+  if (!hit && type === "file" && opts.languageId) {
+    hit = lookupLanguageId(opts.languageId);
+  }
 
-	if (hit) return makeResult(hit, type, open, opts);
+  if (hit) return makeResult(hit, type, open, opts);
 
-	const fallback = opts.fallback ?? type;
-	if (fallback === "none") return null;
+  const fallback = opts.fallback ?? type;
+  if (fallback === "none") return null;
 
-	if (fallback === "file") {
-		return makeResult(
-			{ name: defaultFile, source: "default" },
-			"file",
-			false,
-			opts,
-		);
-	}
+  if (fallback === "file") {
+    return makeResult(
+      { name: defaultFile, source: "default" },
+      "file",
+      false,
+      opts,
+    );
+  }
 
-	return makeResult(
-		{ name: defaultFolder, source: "default" },
-		"folder",
-		open,
-		opts,
-	);
+  return makeResult(
+    { name: defaultFolder, source: "default" },
+    "folder",
+    open,
+    opts,
+  );
 }
 
 export function resolveMaterialIconByLanguageId(
-	languageId: string,
-	options?: ResolveByLanguageIdOptions,
+  languageId: string,
+  options?: ResolveByLanguageIdOptions,
 ): ResolvedMaterialIcon | null {
-	const opts = options ?? {};
-	const hit = lookupLanguageId(languageId);
+  const opts = options ?? {};
+  const hit = lookupLanguageId(languageId);
 
-	if (hit) return makeResult(hit, "file", false, opts);
+  if (hit) return makeResult(hit, "file", false, opts);
 
-	const fallback = opts.fallback ?? "file";
-	if (fallback === "none") return null;
+  const fallback = opts.fallback ?? "file";
+  if (fallback === "none") return null;
 
-	if (fallback === "folder") {
-		return makeResult(
-			{ name: defaultFolder, source: "default" },
-			"folder",
-			false,
-			opts,
-		);
-	}
+  if (fallback === "folder") {
+    return makeResult(
+      { name: defaultFolder, source: "default" },
+      "folder",
+      false,
+      opts,
+    );
+  }
 
-	return makeResult(
-		{ name: defaultFile, source: "default" },
-		"file",
-		false,
-		opts,
-	);
+  return makeResult(
+    { name: defaultFile, source: "default" },
+    "file",
+    false,
+    opts,
+  );
 }
 
 export function getMaterialIconName(
-	path: string,
-	options?: ResolveMaterialIconOptions,
+  path: string,
+  options?: ResolveMaterialIconOptions,
 ): string | null {
-	return resolveMaterialIcon(path, options)?.name ?? null;
+  return resolveMaterialIcon(path, options)?.name ?? null;
 }
 
 export function getMaterialIconCdnUrl(
-	path: string,
-	options?: ResolveMaterialIconOptions,
+  path: string,
+  options?: ResolveMaterialIconOptions,
 ): string | null {
-	return resolveMaterialIcon(path, options)?.cdnUrl ?? null;
+  return resolveMaterialIcon(path, options)?.cdnUrl ?? null;
 }

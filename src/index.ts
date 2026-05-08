@@ -1,21 +1,21 @@
 export {
-	MATERIAL_ICON_THEME_PACKAGE,
-	buildBaseUrl,
-	buildCdnUrl,
+  buildBaseUrl,
+  buildCdnUrl,
+  MATERIAL_ICON_THEME_PACKAGE,
 } from "./cdn.ts";
 export { metadata } from "./generated/metadata.ts";
 export {
-	getMaterialIconCdnUrl,
-	getMaterialIconName,
-	resolveMaterialIcon,
-	resolveMaterialIconByLanguageId,
+  getMaterialIconCdnUrl,
+  getMaterialIconName,
+  resolveMaterialIcon,
+  resolveMaterialIconByLanguageId,
 } from "./resolve.ts";
 export type {
-	CdnProvider,
-	FallbackMode,
-	IconType,
-	ResolveByLanguageIdOptions,
-	ResolveMaterialIconOptions,
-	ResolveSource,
-	ResolvedMaterialIcon,
+  CdnProvider,
+  FallbackMode,
+  IconType,
+  ResolveByLanguageIdOptions,
+  ResolvedMaterialIcon,
+  ResolveMaterialIconOptions,
+  ResolveSource,
 } from "./types.ts";
