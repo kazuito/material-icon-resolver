@@ -4,6 +4,7 @@ import {
 	fileExtensions,
 	fileNames,
 	fileNamesWithPath,
+	languageIds,
 } from "./generated/file-icons.ts";
 import {
 	defaultFolder,
@@ -20,6 +21,7 @@ import {
 	normalizePath,
 } from "./normalize.ts";
 import type {
+	ResolveByLanguageIdOptions,
 	ResolveMaterialIconOptions,
 	ResolveSource,
 	ResolvedMaterialIcon,
@@ -47,6 +49,11 @@ function lookupFile(path: string): Hit | null {
 	}
 
 	return null;
+}
+
+function lookupLanguageId(languageId: string): Hit | null {
+	const hit = languageIds[languageId.toLowerCase()];
+	return hit ? { name: hit, source: "languageIds" } : null;
 }
 
 function lookupFolder(path: string, open: boolean): Hit | null {
@@ -88,7 +95,11 @@ export function resolveMaterialIcon(
 	const type = opts.type ?? "file";
 	const open = opts.open ?? false;
 
-	const hit = type === "file" ? lookupFile(path) : lookupFolder(path, open);
+	let hit = type === "file" ? lookupFile(path) : lookupFolder(path, open);
+
+	if (!hit && type === "file" && opts.languageId) {
+		hit = lookupLanguageId(opts.languageId);
+	}
 
 	if (hit) return makeResult(hit, type, open, opts);
 
@@ -108,6 +119,35 @@ export function resolveMaterialIcon(
 		{ name: defaultFolder, source: "default" },
 		"folder",
 		open,
+		opts,
+	);
+}
+
+export function resolveMaterialIconByLanguageId(
+	languageId: string,
+	options?: ResolveByLanguageIdOptions,
+): ResolvedMaterialIcon | null {
+	const opts = options ?? {};
+	const hit = lookupLanguageId(languageId);
+
+	if (hit) return makeResult(hit, "file", false, opts);
+
+	const fallback = opts.fallback ?? "file";
+	if (fallback === "none") return null;
+
+	if (fallback === "folder") {
+		return makeResult(
+			{ name: defaultFolder, source: "default" },
+			"folder",
+			false,
+			opts,
+		);
+	}
+
+	return makeResult(
+		{ name: defaultFile, source: "default" },
+		"file",
+		false,
 		opts,
 	);
 }

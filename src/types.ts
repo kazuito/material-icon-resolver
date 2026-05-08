@@ -8,6 +8,7 @@ export type ResolveSource =
 	| "fileNamesWithPath"
 	| "fileNames"
 	| "fileExtensions"
+	| "languageIds"
 	| "rootFolderNames"
 	| "folderNames"
 	| "default";
@@ -19,7 +20,13 @@ export type ResolveMaterialIconOptions = {
 	fallback?: FallbackMode;
 	open?: boolean;
 	baseUrl?: string;
+	languageId?: string;
 };
+
+export type ResolveByLanguageIdOptions = Omit<
+	ResolveMaterialIconOptions,
+	"type" | "open" | "languageId"
+>;
 
 export type ResolvedMaterialIcon = {
 	name: string;

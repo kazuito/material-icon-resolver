@@ -8,11 +8,13 @@ export {
 	getMaterialIconCdnUrl,
 	getMaterialIconName,
 	resolveMaterialIcon,
+	resolveMaterialIconByLanguageId,
 } from "./resolve.ts";
 export type {
 	CdnProvider,
 	FallbackMode,
 	IconType,
+	ResolveByLanguageIdOptions,
 	ResolveMaterialIconOptions,
 	ResolveSource,
 	ResolvedMaterialIcon,

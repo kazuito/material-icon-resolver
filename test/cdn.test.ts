@@ -71,4 +71,40 @@ describe("CDN URL", () => {
 			"https://cdn.jsdelivr.net/npm/material-icon-theme@5.34.0/icons/folder-src-open.svg",
 		);
 	});
+
+	it("baseUrl takes precedence over cdn and version", () => {
+		const r = resolveMaterialIcon("foo.ts", {
+			baseUrl: "/icons",
+			cdn: "unpkg",
+			version: "9.9.9",
+		});
+		expect(r?.cdnUrl).toBe("/icons/typescript.svg");
+	});
+
+	it("baseUrl with no leading slash is preserved as relative", () => {
+		const r = resolveMaterialIcon("foo.ts", { baseUrl: "icons" });
+		expect(r?.cdnUrl).toBe("icons/typescript.svg");
+	});
+
+	it("baseUrl works with absolute https URLs", () => {
+		const r = resolveMaterialIcon("foo.ts", {
+			baseUrl: "https://cdn.example.com/v2",
+		});
+		expect(r?.cdnUrl).toBe("https://cdn.example.com/v2/typescript.svg");
+	});
+
+	it("custom version is reflected in URL", () => {
+		const r = resolveMaterialIcon("foo.ts", { version: "latest" });
+		expect(r?.cdnUrl).toBe(
+			"https://cdn.jsdelivr.net/npm/material-icon-theme@latest/icons/typescript.svg",
+		);
+	});
+
+	it("default fallback file icon also has a cdn URL", () => {
+		const r = resolveMaterialIcon("zzz_no_such_file_xyz", { version: "5.34.0" });
+		expect(r?.source).toBe("default");
+		expect(r?.cdnUrl).toBe(
+			"https://cdn.jsdelivr.net/npm/material-icon-theme@5.34.0/icons/file.svg",
+		);
+	});
 });

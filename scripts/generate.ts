@@ -117,7 +117,16 @@ function buildFileMaps(
 		}
 		for (const raw of icon.fileExtensions ?? []) {
 			const key = raw.toLowerCase();
-			fileExtensions[key] = icon.name;
+			// Upstream occasionally registers full filenames here (e.g. ".ncurc.js").
+			// The runtime lookup builds extension candidates without a leading dot,
+			// so dotted keys would be unreachable in fileExtensions. Route them to
+			// fileNames where they will actually match.
+			if (key.startsWith(".")) {
+				if (key.includes("/")) fileNamesWithPath[key] = icon.name;
+				else fileNames[key] = icon.name;
+			} else {
+				fileExtensions[key] = icon.name;
+			}
 		}
 	}
 
@@ -165,6 +174,25 @@ function buildFileMaps(
 	}
 
 	return { fileNames, fileNamesWithPath, fileExtensions };
+}
+
+function buildLanguageIdMap(
+	languageIcons: Array<{
+		name: string;
+		ids: string[];
+		disabled?: boolean;
+		enabledFor?: string[];
+		clone?: unknown;
+	}>,
+): Record<string, string> {
+	const languageIds: Record<string, string> = {};
+	for (const icon of languageIcons) {
+		if (!isEnabled(icon)) continue;
+		for (const id of icon.ids) {
+			languageIds[id.toLowerCase()] = icon.name;
+		}
+	}
+	return languageIds;
 }
 
 function buildFolderMaps(theme: {
@@ -257,6 +285,7 @@ async function main() {
 		await loadUpstream(repo);
 
 	const fileMaps = buildFileMaps(fileIcons, languageIcons);
+	const languageIds = buildLanguageIdMap(languageIcons);
 	const theme = folderIcons.find((t) => t.name === FOLDER_THEME);
 	if (!theme) throw new Error(`folder theme '${FOLDER_THEME}' not found`);
 	const folderMaps = buildFolderMaps(theme);
@@ -274,6 +303,8 @@ async function main() {
 		serializeRecord("fileNamesWithPath", fileMaps.fileNamesWithPath) +
 		"\n" +
 		serializeRecord("fileExtensions", fileMaps.fileExtensions) +
+		"\n" +
+		serializeRecord("languageIds", languageIds) +
 		"\n" +
 		`export const defaultFile = ${JSON.stringify(fileIcons.defaultIcon.name)};\n`;
 
@@ -309,7 +340,8 @@ async function main() {
 	console.log(
 		`fileNames=${Object.keys(fileMaps.fileNames).length} ` +
 			`fileNamesWithPath=${Object.keys(fileMaps.fileNamesWithPath).length} ` +
-			`fileExtensions=${Object.keys(fileMaps.fileExtensions).length}`,
+			`fileExtensions=${Object.keys(fileMaps.fileExtensions).length} ` +
+			`languageIds=${Object.keys(languageIds).length}`,
 	);
 	console.log(
 		`folderNames=${Object.keys(folderMaps.folderNames).length} ` +
