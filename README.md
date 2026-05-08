@@ -2,7 +2,7 @@
 
 Resolve [VS Code Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme) icon names, SVG filenames, and CDN URLs from file or folder paths — or directly from a VS Code language ID.
 
-ESM-only TypeScript library. No runtime dependencies. Works in Node, Bun, Deno, and the browser.
+TypeScript library with ESM and CommonJS builds. No runtime dependencies. Works in Node, Bun, Deno, and the browser.
 
 ## Install
 
@@ -66,7 +66,33 @@ getMaterialIconName("package.json");
 // "nodejs"
 
 getMaterialIconCdnUrl("package.json");
-// "https://cdn.jsdelivr.net/npm/material-icon-theme@5.34.0/icons/package.json.svg"
+// "https://cdn.jsdelivr.net/npm/material-icon-theme@5.34.0/icons/nodejs.svg"
+```
+
+## Split imports
+
+The root entry exports the combined file/folder resolver and includes both lookup tables. If you only need one side, use a split entry so bundlers and runtimes can avoid loading the other large map:
+
+```ts
+import { resolveMaterialFileIcon } from "material-icon-resolver/file";
+
+resolveMaterialFileIcon("src/index.ts");
+// { name: "typescript", filename: "typescript.svg", type: "file", ... }
+```
+
+```ts
+import { resolveMaterialFolderIcon } from "material-icon-resolver/folder";
+
+resolveMaterialFolderIcon("src", { open: true });
+// { name: "folder-src", filename: "folder-src-open.svg", type: "folder", ... }
+```
+
+CommonJS is also supported:
+
+```js
+const { resolveMaterialFileIcon } = require("material-icon-resolver/file");
+
+resolveMaterialFileIcon("package.json");
 ```
 
 ## API
@@ -95,6 +121,18 @@ type ResolvedMaterialIcon = {
 ### `resolveMaterialIconByLanguageId(languageId, options?)`
 
 Resolve directly from a [VS Code language ID](https://code.visualstudio.com/docs/languages/identifiers) (e.g. `"typescript"`, `"rust"`, `"shellscript"`). Returns a `ResolvedMaterialIcon` (with `type: "file"`) or `null` (when `fallback: "none"` and no match). Accepts the same `cdn` / `version` / `baseUrl` / `fallback` options as `resolveMaterialIcon`.
+
+### `resolveMaterialFileIcon(path, options?)`
+
+Resolve from a file path via `material-icon-resolver/file`. This entry imports only file lookup data. It accepts `cdn` / `version` / `baseUrl` / `languageId` and `fallback: "file" | "none"`.
+
+### `resolveMaterialFileIconByLanguageId(languageId, options?)`
+
+Resolve directly from a VS Code language ID via `material-icon-resolver/file`. It accepts `cdn` / `version` / `baseUrl` and `fallback: "file" | "none"`.
+
+### `resolveMaterialFolderIcon(path, options?)`
+
+Resolve from a folder path via `material-icon-resolver/folder`. This entry imports only folder lookup data. It accepts `cdn` / `version` / `baseUrl` / `open` and `fallback: "folder" | "none"`.
 
 ### Options
 

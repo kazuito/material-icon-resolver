@@ -1,91 +1,13 @@
-import { buildBaseUrl, buildCdnUrl } from "./cdn.ts";
 import {
-  defaultFile,
-  fileExtensions,
-  fileNames,
-  fileNamesWithPath,
-  languageIds,
-} from "./generated/file-icons.ts";
-import {
-  defaultFolder,
-  folderNames,
-  folderNamesExpanded,
-  rootFolderNames,
-  rootFolderNamesExpanded,
-} from "./generated/folder-icons.ts";
-import { metadata } from "./generated/metadata.ts";
-import {
-  getBasename,
-  getExtensionCandidates,
-  getParentName,
-  normalizePath,
-} from "./normalize.ts";
+  resolveMaterialFileIcon,
+  resolveMaterialFileIconByLanguageId,
+} from "./file.ts";
+import { resolveMaterialFolderIcon } from "./folder.ts";
 import type {
   ResolveByLanguageIdOptions,
   ResolvedMaterialIcon,
   ResolveMaterialIconOptions,
-  ResolveSource,
 } from "./types.ts";
-
-type Hit = { name: string; source: ResolveSource };
-
-function lookupFile(path: string): Hit | null {
-  const normalized = normalizePath(path);
-  const basename = getBasename(normalized).toLowerCase();
-  const parent = getParentName(normalized).toLowerCase();
-
-  if (parent.length > 0) {
-    const key = `${parent}/${basename}`;
-    const hit = fileNamesWithPath[key];
-    if (hit) return { name: hit, source: "fileNamesWithPath" };
-  }
-
-  const nameHit = fileNames[basename];
-  if (nameHit) return { name: nameHit, source: "fileNames" };
-
-  for (const ext of getExtensionCandidates(basename)) {
-    const extHit = fileExtensions[ext];
-    if (extHit) return { name: extHit, source: "fileExtensions" };
-  }
-
-  return null;
-}
-
-function lookupLanguageId(languageId: string): Hit | null {
-  const hit = languageIds[languageId.toLowerCase()];
-  return hit ? { name: hit, source: "languageIds" } : null;
-}
-
-function lookupFolder(path: string, open: boolean): Hit | null {
-  const normalized = normalizePath(path);
-  const basename = getBasename(normalized).toLowerCase();
-  if (basename.length === 0) return null;
-
-  const rootMap = open ? rootFolderNamesExpanded : rootFolderNames;
-  const rootHit = rootMap[basename];
-  if (rootHit) return { name: rootHit, source: "rootFolderNames" };
-
-  const folderMap = open ? folderNamesExpanded : folderNames;
-  const folderHit = folderMap[basename];
-  if (folderHit) return { name: folderHit, source: "folderNames" };
-
-  return null;
-}
-
-function makeResult(
-  hit: Hit,
-  type: "file" | "folder",
-  open: boolean,
-  options: ResolveMaterialIconOptions,
-): ResolvedMaterialIcon {
-  const filename =
-    type === "folder" && open ? `${hit.name}-open.svg` : `${hit.name}.svg`;
-  const version = options.version ?? metadata.upstreamVersion;
-  const cdnUrl = options.baseUrl
-    ? buildBaseUrl(options.baseUrl, filename)
-    : buildCdnUrl({ cdn: options.cdn ?? "jsdelivr", version, filename });
-  return { name: hit.name, filename, cdnUrl, type, source: hit.source };
-}
 
 /**
  * Resolve a Material Icon Theme icon from a file or folder path.
@@ -135,32 +57,24 @@ export function resolveMaterialIcon(
   const type = opts.type ?? "file";
   const open = opts.open ?? false;
 
-  let hit = type === "file" ? lookupFile(path) : lookupFolder(path, open);
-
-  if (!hit && type === "file" && opts.languageId) {
-    hit = lookupLanguageId(opts.languageId);
-  }
-
-  if (hit) return makeResult(hit, type, open, opts);
+  const hit =
+    type === "file"
+      ? resolveMaterialFileIcon(path, { ...opts, fallback: "none" })
+      : resolveMaterialFolderIcon(path, { ...opts, fallback: "none" });
+  if (hit) return hit;
 
   const fallback = opts.fallback ?? type;
   if (fallback === "none") return null;
 
   if (fallback === "file") {
-    return makeResult(
-      { name: defaultFile, source: "default" },
-      "file",
-      false,
-      opts,
-    );
+    return resolveMaterialFileIcon("", {
+      ...opts,
+      fallback: "file",
+      languageId: undefined,
+    });
   }
 
-  return makeResult(
-    { name: defaultFolder, source: "default" },
-    "folder",
-    open,
-    opts,
-  );
+  return resolveMaterialFolderIcon("", { ...opts, fallback: "folder", open });
 }
 
 /**
@@ -191,28 +105,20 @@ export function resolveMaterialIconByLanguageId(
   options?: ResolveByLanguageIdOptions,
 ): ResolvedMaterialIcon | null {
   const opts = options ?? {};
-  const hit = lookupLanguageId(languageId);
-
-  if (hit) return makeResult(hit, "file", false, opts);
+  const hit = resolveMaterialFileIconByLanguageId(languageId, {
+    ...opts,
+    fallback: "none",
+  });
+  if (hit) return hit;
 
   const fallback = opts.fallback ?? "file";
   if (fallback === "none") return null;
 
   if (fallback === "folder") {
-    return makeResult(
-      { name: defaultFolder, source: "default" },
-      "folder",
-      false,
-      opts,
-    );
+    return resolveMaterialFolderIcon("", { ...opts, fallback: "folder" });
   }
 
-  return makeResult(
-    { name: defaultFile, source: "default" },
-    "file",
-    false,
-    opts,
-  );
+  return resolveMaterialFileIconByLanguageId("", { ...opts, fallback: "file" });
 }
 
 /**

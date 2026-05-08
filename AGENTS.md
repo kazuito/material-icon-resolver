@@ -1,11 +1,14 @@
 # material-icon-resolver
 
-Resolve VS Code Material Icon Theme icon names, SVG filenames, and CDN URLs from file or folder paths. ESM-only TypeScript library, distributed via npm.
+Resolve VS Code Material Icon Theme icon names, SVG filenames, and CDN URLs from file or folder paths. TypeScript library with ESM and CommonJS builds, distributed via npm.
 
 ## Repo Map
 
 - `src/index.ts` — public API re-exports
 - `src/resolve.ts` — `resolveMaterialIcon`, `getMaterialIconName`, `getMaterialIconCdnUrl`
+- `src/file.ts` — file-only resolver for `material-icon-resolver/file`; imports only file icon generated data
+- `src/folder.ts` — folder-only resolver for `material-icon-resolver/folder`; imports only folder icon generated data
+- `src/result.ts` — shared result / CDN URL construction
 - `src/normalize.ts` — path normalization, basename/parent split, extension candidates
 - `src/cdn.ts` — jsDelivr / unpkg / `baseUrl` URL builders
 - `src/types.ts` — public type definitions
@@ -14,7 +17,7 @@ Resolve VS Code Material Icon Theme icon names, SVG filenames, and CDN URLs from
 - `vendor/vscode-material-icon-theme/` — git submodule pinned to a specific upstream release tag; the source of truth for which version is generated
 - `scripts/validate-icons.ts` — fetches the published npm tarball and asserts every referenced SVG name actually exists
 - `test/` — vitest suites (file resolver, folder resolver, CDN URL)
-- `dist/` — tsdown output (`.mjs` + `.d.mts`); gitignored
+- `dist/` — tsdown output (`.mjs` / `.cjs` + `.d.mts` / `.d.cts`); gitignored
 - `PLAN.md` — original Japanese design doc, kept for context
 
 ## Commands
@@ -24,7 +27,7 @@ git submodule update --init --recursive  # required before first generate
 pnpm install
 pnpm typecheck       # tsc --noEmit
 pnpm test            # vitest run
-pnpm build           # tsdown → dist/index.mjs + dist/index.d.mts
+pnpm build           # tsdown → ESM/CJS outputs for root, file, and folder entries
 pnpm generate        # regenerate src/generated/*.ts from the pinned submodule
 pnpm validate-icons  # fetch npm tarball, check every referenced SVG exists
 pnpm lint            # biome lint
@@ -50,7 +53,8 @@ pnpm format          # biome format --write
 
 - File resolver order: `fileNamesWithPath[parent/basename]` → `fileNames[basename]` → `fileExtensions[longest…shortest]` → fallback. All keys lowercase.
 - Folder resolver order: `rootFolderNames[basename]` → `folderNames[basename]` → fallback. Keys are pre-expanded with the upstream `extendFolderNames` rule (`name`, `.name`, `_name`, `-name`, `__name__`).
-- The `-open` suffix for expanded folders is appended only at filename construction in `resolve.ts#makeResult`; map values store the bare icon name.
+- The `-open` suffix for expanded folders is appended only at filename construction in `src/result.ts#makeResult`; map values store the bare icon name.
+- Keep file-only and folder-only entry points independent: `src/file.ts` must not import `src/generated/folder-icons.ts`, and `src/folder.ts` must not import `src/generated/file-icons.ts`.
 - Icons with `clone: { ... }` in upstream are **skipped** by the generator — upstream generates those SVGs at runtime and they aren't published in the npm package. Don't try to add them back.
 - Default `activeIconPack` is `"angular"` (matches upstream `defaultConfig`). Icons gated by other packs (vue, react, qwik, …) are excluded.
 - VS Code language IDs ARE used. Upstream `languageIcons.ts` is read at generate time, and each language id is expanded to file extensions / fileNames via the static map in `scripts/language-id-extensions.ts`. Explicit entries in `fileIcons.ts#fileExtensions` / `fileNames` take precedence; language-id-derived entries fill the gap (e.g. `.yml`, `.js`, `.ts`, `.html`). When upstream adds a new language id, `pnpm generate` warns and you need to add it to `language-id-extensions.ts`.
@@ -58,7 +62,7 @@ pnpm format          # biome format --write
 
 ## Safety / Gotchas
 
-- `package.json#exports` points at `dist/index.mjs` / `dist/index.d.mts` because tsdown emits `.mjs`. If you change the build extension, update `exports` to match.
+- `package.json#exports` uses per-condition types (`import.types` → `.d.mts`, `require.types` → `.d.cts`) for proper dual-package type resolution. `typesVersions` is set so legacy `--moduleResolution node` consumers can resolve `./file` and `./folder` subpaths. If you change build entry names, output extensions, or declaration filenames, update `exports` and `typesVersions` to match. Validate with `pnpm dlx @arethetypeswrong/cli --pack .` (all entries should be 🟢 across node10/node16/bundler).
 - pnpm needs `pnpm.onlyBuiltDependencies: ["esbuild"]` in `package.json` to allow esbuild's postinstall (used by tsx and tsdown). Removing it makes `pnpm install` fail with `ERR_PNPM_IGNORED_BUILDS`.
 - `tsdown.config.ts` has `minify: true` for size; debugging the bundle requires reading source instead.
 - Default `version` in `ResolveMaterialIconOptions` is pinned to `metadata.upstreamVersion`, not `latest`. Users opt into `latest` explicitly. Don't change this default — the generated association table only matches the pinned version's SVG inventory.
