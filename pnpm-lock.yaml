@@ -213,6 +213,9 @@ importers:
       '@types/node':
         specifier: ^25.6.0
         version: 25.6.0
+      husky:
+        specifier: ^9.1.7
+        version: 9.1.7
       tsdown:
         specifier: ^0.21.10
         version: 0.21.10(typescript@6.0.3)
@@ -825,6 +828,11 @@ packages:
 
   hookable@6.1.1:
     resolution: {integrity: sha512-U9LYDy1CwhMCnprUfeAZWZGByVbhd54hwepegYTK7Pi5NvqEj63ifz5z+xukznehT7i6NIZRu89Ay1AZmRsLEQ==}
+
+  husky@9.1.7:
+    resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   import-without-cache@0.3.3:
     resolution: {integrity: sha512-bDxwDdF04gm550DfZHgffvlX+9kUlcz32UD0AeBTmVPFiWkrexF2XVmiuFFbDhiFuP8fQkrkvI2KdSNPYWAXkQ==}
@@ -1574,6 +1582,8 @@ snapshots:
       resolve-pkg-maps: 1.0.0
 
   hookable@6.1.1: {}
+
+  husky@9.1.7: {}
 
   import-without-cache@0.3.3: {}
 
