@@ -1,6 +1,6 @@
 # material-icon-resolver
 
-Resolve [VS Code Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme) icon names, SVG filenames, and CDN URLs from file or folder paths — or directly from a VS Code language ID.
+Resolve [VSCode Material Icon Theme](https://github.com/material-extensions/vscode-material-icon-theme) icon names, SVG filenames, and CDN URLs from file or folder paths — or directly from a VSCode language ID.
 
 TypeScript library with ESM and CommonJS builds. No runtime dependencies. Works in Node, Bun, Deno, and the browser.
 
@@ -35,7 +35,7 @@ resolveMaterialIcon("src", { type: "folder", open: true });
 // { name: "folder-src", filename: "folder-src-open.svg", ... }
 ```
 
-Resolve from a VS Code language ID (useful for editors like Monaco where you already have the language but the path may be synthetic):
+Resolve from a VSCode language ID (useful for editors like Monaco where you already have the language but the path may be synthetic):
 
 ```ts
 import { resolveMaterialIconByLanguageId } from "material-icon-resolver";
@@ -120,7 +120,7 @@ type ResolvedMaterialIcon = {
 
 ### `resolveMaterialIconByLanguageId(languageId, options?)`
 
-Resolve directly from a [VS Code language ID](https://code.visualstudio.com/docs/languages/identifiers) (e.g. `"typescript"`, `"rust"`, `"shellscript"`). Returns a `ResolvedMaterialIcon` (with `type: "file"`) or `null` (when `fallback: "none"` and no match). Accepts the same `cdn` / `version` / `baseUrl` / `fallback` options as `resolveMaterialIcon`.
+Resolve directly from a [VSCode language ID](https://code.visualstudio.com/docs/languages/identifiers) (e.g. `"typescript"`, `"rust"`, `"shellscript"`). Returns a `ResolvedMaterialIcon` (with `type: "file"`) or `null` (when `fallback: "none"` and no match). Accepts the same `cdn` / `version` / `baseUrl` / `fallback` options as `resolveMaterialIcon`.
 
 ### `resolveMaterialFileIcon(path, options?)`
 
@@ -128,7 +128,7 @@ Resolve from a file path via `material-icon-resolver/file`. This entry imports o
 
 ### `resolveMaterialFileIconByLanguageId(languageId, options?)`
 
-Resolve directly from a VS Code language ID via `material-icon-resolver/file`. It accepts `cdn` / `version` / `baseUrl` and `fallback: "file" | "none"`.
+Resolve directly from a VSCode language ID via `material-icon-resolver/file`. It accepts `cdn` / `version` / `baseUrl` and `fallback: "file" | "none"`.
 
 ### `resolveMaterialFolderIcon(path, options?)`
 
@@ -140,7 +140,7 @@ Resolve from a folder path via `material-icon-resolver/folder`. This entry impor
 | ------------ | ----------------------------------- | ---------------------------------------- | ----------- |
 | `type`       | `"file" \| "folder"`                | `"file"`                                 | What to resolve `path` as. |
 | `open`       | `boolean`                           | `false`                                  | For folders: append `-open` to the filename (expanded folder icon). |
-| `languageId` | `string`                            | —                                        | VS Code language ID used as a fallback when path lookup misses. Ignored when `type` is `"folder"`. |
+| `languageId` | `string`                            | —                                        | VSCode language ID used as a fallback when path lookup misses. Ignored when `type` is `"folder"`. |
 | `fallback`   | `"file" \| "folder" \| "none"`      | matches `type`                           | What to return when no match is found. `"none"` returns `null`. |
 | `cdn`        | `"jsdelivr" \| "unpkg"`             | `"jsdelivr"`                             | CDN provider for `cdnUrl`. |
 | `version`    | `string`                            | pinned upstream version (`metadata.upstreamVersion`) | `material-icon-theme` version on the CDN. |
