@@ -51,7 +51,9 @@ describe("CDN URL", () => {
 	it("buildCdnUrl helper is exported", () => {
 		expect(
 			buildCdnUrl({ cdn: "jsdelivr", version: "1.0.0", filename: "x.svg" }),
-		).toBe("https://cdn.jsdelivr.net/npm/material-icon-theme@1.0.0/icons/x.svg");
+		).toBe(
+			"https://cdn.jsdelivr.net/npm/material-icon-theme@1.0.0/icons/x.svg",
+		);
 	});
 
 	it("buildBaseUrl helper is exported", () => {

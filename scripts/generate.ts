@@ -181,7 +181,8 @@ function gitCommit(repo: string, ref: string): string {
 
 async function main() {
 	const repoRaw =
-		process.env.MATERIAL_ICON_THEME_REPO ?? "~/dev/oss/vscode-material-icon-theme";
+		process.env.MATERIAL_ICON_THEME_REPO ??
+		"~/dev/oss/vscode-material-icon-theme";
 	const repo = expandTilde(repoRaw);
 
 	const upstreamPkg = JSON.parse(
@@ -189,7 +190,9 @@ async function main() {
 	) as { version: string };
 
 	const ref = process.env.MATERIAL_ICON_THEME_REF ?? `v${upstreamPkg.version}`;
-	console.log(`upstream repo: ${repo}, version: ${upstreamPkg.version}, checkout: ${ref}`);
+	console.log(
+		`upstream repo: ${repo}, version: ${upstreamPkg.version}, checkout: ${ref}`,
+	);
 
 	const worktree = checkoutWorktree(repo, ref);
 	let result: Awaited<ReturnType<typeof loadUpstream>>;

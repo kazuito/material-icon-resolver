@@ -88,8 +88,7 @@ export function resolveMaterialIcon(
 	const type = opts.type ?? "file";
 	const open = opts.open ?? false;
 
-	const hit =
-		type === "file" ? lookupFile(path) : lookupFolder(path, open);
+	const hit = type === "file" ? lookupFile(path) : lookupFolder(path, open);
 
 	if (hit) return makeResult(hit, type, open, opts);
 

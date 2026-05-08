@@ -5,5 +5,5 @@ export const metadata = {
 	upstreamVersion: "5.34.0",
 	upstreamCommit: "cad78a4fdd7fc1336ec142431fe34835e5fb9407",
 	upstreamRepo: "material-extensions/vscode-material-icon-theme",
-	generatedAt: "2026-05-08T09:17:05.922Z",
+	generatedAt: "2026-05-08T09:18:39.363Z",
 } as const;

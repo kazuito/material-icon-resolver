@@ -1,4 +1,8 @@
-export { MATERIAL_ICON_THEME_PACKAGE, buildBaseUrl, buildCdnUrl } from "./cdn.ts";
+export {
+	MATERIAL_ICON_THEME_PACKAGE,
+	buildBaseUrl,
+	buildCdnUrl,
+} from "./cdn.ts";
 export { metadata } from "./generated/metadata.ts";
 export {
 	getMaterialIconCdnUrl,
