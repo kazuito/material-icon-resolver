@@ -39,7 +39,8 @@
 		"lint": "biome lint",
 		"format": "biome format --write",
 		"prepublishOnly": "pnpm typecheck && pnpm test && pnpm build",
-		"prepare": "husky"
+		"prepare": "husky",
+    "try": "pnpm dlx serve . & open http://localhost:3000/try.html"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
