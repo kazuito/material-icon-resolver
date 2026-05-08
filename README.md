@@ -165,12 +165,6 @@ import {
 } from "material-icon-resolver";
 ```
 
-## Notes
-
-- light/highContrast variants, custom icon associations, and `clone`-generated icons are out of scope.
-- The default `version` is **pinned** to the upstream release the package was generated from, not `latest`. Pass `version: "latest"` (or a specific version) to opt out.
-- The `activeIconPack` is fixed to `"angular"` (the upstream default). Icons gated by other packs (vue, react, qwik, …) are excluded.
-
 ## License
 
-[MIT](./LICENSE) © kazuito
+[MIT](./LICENSE)
