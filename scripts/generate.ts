@@ -4,6 +4,7 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { languageIdAssociations } from "./language-id-extensions.ts";
 
 const DEFAULT_ACTIVE_ICON_PACK = "angular";
 const FOLDER_THEME = "specific";
@@ -38,6 +39,9 @@ function loadUpstream(sourceDir: string) {
 	const folderIconsUrl = pathToFileURL(
 		resolve(sourceDir, "src/core/icons/folderIcons.ts"),
 	).href;
+	const languageIconsUrl = pathToFileURL(
+		resolve(sourceDir, "src/core/icons/languageIcons.ts"),
+	).href;
 	return Promise.all([
 		import(fileIconsUrl) as Promise<{
 			fileIcons: {
@@ -67,6 +71,15 @@ function loadUpstream(sourceDir: string) {
 				}>;
 			}>;
 		}>,
+		import(languageIconsUrl) as Promise<{
+			languageIcons: Array<{
+				name: string;
+				ids: string[];
+				disabled?: boolean;
+				enabledFor?: string[];
+				clone?: unknown;
+			}>;
+		}>,
 	]);
 }
 
@@ -91,15 +104,24 @@ const folderNameVariants = (n: string) => [
 	`__${n}__`,
 ];
 
-function buildFileMaps(fileIcons: {
-	icons: Array<{
+function buildFileMaps(
+	fileIcons: {
+		icons: Array<{
+			name: string;
+			fileNames?: string[];
+			fileExtensions?: string[];
+			disabled?: boolean;
+			enabledFor?: string[];
+		}>;
+	},
+	languageIcons: Array<{
 		name: string;
-		fileNames?: string[];
-		fileExtensions?: string[];
+		ids: string[];
 		disabled?: boolean;
 		enabledFor?: string[];
-	}>;
-}) {
+		clone?: unknown;
+	}>,
+) {
 	const fileNames: Record<string, string> = {};
 	const fileNamesWithPath: Record<string, string> = {};
 	const fileExtensions: Record<string, string> = {};
@@ -116,6 +138,51 @@ function buildFileMaps(fileIcons: {
 			fileExtensions[key] = icon.name;
 		}
 	}
+
+	// Merge in associations derived from VS Code language IDs.
+	// Explicit fileExtensions / fileNames from fileIcons.ts take precedence.
+	const seenLanguageIds = new Set<string>();
+	const missingLanguageIds: string[] = [];
+	for (const icon of languageIcons) {
+		if (!isEnabled(icon)) continue;
+		for (const id of icon.ids) {
+			seenLanguageIds.add(id);
+			const assoc = languageIdAssociations[id];
+			if (!assoc) {
+				missingLanguageIds.push(id);
+				continue;
+			}
+			for (const raw of assoc.extensions ?? []) {
+				const key = raw.toLowerCase();
+				if (!(key in fileExtensions)) fileExtensions[key] = icon.name;
+			}
+			for (const raw of assoc.fileNames ?? []) {
+				const key = raw.toLowerCase();
+				if (key.includes("/")) {
+					if (!(key in fileNamesWithPath))
+						fileNamesWithPath[key] = icon.name;
+				} else if (!(key in fileNames)) {
+					fileNames[key] = icon.name;
+				}
+			}
+		}
+	}
+
+	// Warn about language IDs in our static map that upstream no longer references.
+	const stale = Object.keys(languageIdAssociations).filter(
+		(id) => !seenLanguageIds.has(id),
+	);
+	if (stale.length > 0) {
+		console.warn(
+			`note: ${stale.length} language id(s) in language-id-extensions.ts are not referenced by upstream languageIcons.ts: ${stale.join(", ")}`,
+		);
+	}
+	if (missingLanguageIds.length > 0) {
+		console.warn(
+			`note: ${missingLanguageIds.length} upstream language id(s) have no entry in language-id-extensions.ts: ${[...new Set(missingLanguageIds)].sort().join(", ")}`,
+		);
+	}
+
 	return { fileNames, fileNamesWithPath, fileExtensions };
 }
 
@@ -201,9 +268,9 @@ async function main() {
 	} finally {
 		removeWorktree(repo, worktree);
 	}
-	const [{ fileIcons }, { folderIcons }] = result;
+	const [{ fileIcons }, { folderIcons }, { languageIcons }] = result;
 
-	const fileMaps = buildFileMaps(fileIcons);
+	const fileMaps = buildFileMaps(fileIcons, languageIcons);
 	const theme = folderIcons.find((t) => t.name === FOLDER_THEME);
 	if (!theme) throw new Error(`folder theme '${FOLDER_THEME}' not found`);
 	const folderMaps = buildFolderMaps(theme);

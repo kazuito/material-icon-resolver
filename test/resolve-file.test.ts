@@ -48,6 +48,17 @@ describe("resolveMaterialIcon (file)", () => {
 		expect(r).toBeNull();
 	});
 
+	it("resolves languageId-derived extensions (.yml → yaml, .js → javascript, .ts → typescript, .html → html)", () => {
+		expect(resolveMaterialIcon("config.yml")?.name).toBe("yaml");
+		expect(resolveMaterialIcon(".config/eza/theme.yml")?.name).toBe("yaml");
+		expect(resolveMaterialIcon("app.yaml")?.name).toBe("yaml");
+		expect(resolveMaterialIcon("index.js")?.name).toBe("javascript");
+		expect(resolveMaterialIcon("index.ts")?.name).toBe("typescript");
+		expect(resolveMaterialIcon("page.html")?.name).toBe("html");
+		expect(resolveMaterialIcon("a.rb")?.name).toBe("ruby");
+		expect(resolveMaterialIcon("a.swift")?.name).toBe("swift");
+	});
+
 	it("treats path with no extension correctly", () => {
 		// LICENSE has no extension and no upstream entry by default → fallback
 		const r = resolveMaterialIcon("README", {

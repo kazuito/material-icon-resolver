@@ -49,7 +49,8 @@ pnpm format          # biome format --write
 - The `-open` suffix for expanded folders is appended only at filename construction in `resolve.ts#makeResult`; map values store the bare icon name.
 - Icons with `clone: { ... }` in upstream are **skipped** by the generator — upstream generates those SVGs at runtime and they aren't published in the npm package. Don't try to add them back.
 - Default `activeIconPack` is `"angular"` (matches upstream `defaultConfig`). Icons gated by other packs (vue, react, qwik, …) are excluded.
-- VS Code language IDs are not used. Custom icon associations, light/highContrast variants, and clone icons are intentionally out of scope (see `PLAN.md` §4).
+- VS Code language IDs ARE used. Upstream `languageIcons.ts` is read at generate time, and each language id is expanded to file extensions / fileNames via the static map in `scripts/language-id-extensions.ts`. Explicit entries in `fileIcons.ts#fileExtensions` / `fileNames` take precedence; language-id-derived entries fill the gap (e.g. `.yml`, `.js`, `.ts`, `.html`). When upstream adds a new language id, `pnpm generate` warns and you need to add it to `language-id-extensions.ts`.
+- Custom icon associations, light/highContrast variants, and clone icons remain out of scope (see `PLAN.md` §4).
 
 ## Safety / Gotchas
 
