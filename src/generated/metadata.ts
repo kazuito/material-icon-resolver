@@ -17,5 +17,5 @@ export const metadata = {
 	/** Upstream GitHub repo, in `owner/name` form. */
 	upstreamRepo: "material-extensions/vscode-material-icon-theme",
 	/** ISO 8601 timestamp of when these tables were generated. */
-	generatedAt: "2026-05-08T18:22:03.388Z",
+	generatedAt: "2026-05-10T13:46:25.893Z",
 } as const;

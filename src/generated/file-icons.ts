@@ -640,6 +640,7 @@ export const fileNames: Record<string, string> = {
 	"blitz.config.js": "blitz",
 	"blitz.config.ts": "blitz",
 	"bower.json": "bower",
+	"brewfile": "ruby",
 	"browserslist": "browserlist",
 	"buildkite.yaml": "buildkite",
 	"buildkite.yml": "buildkite",

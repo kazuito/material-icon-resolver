@@ -257,6 +257,7 @@ export const languageIdAssociations: Record<string, LanguageIdAssoc> = {
       "Guardfile",
       "Podfile",
       "Capfile",
+      "Brewfile",
     ],
   },
   rust: { extensions: ["rs"] },
