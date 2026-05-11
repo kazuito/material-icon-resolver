@@ -35,7 +35,7 @@ function expandFolderNames(): Record<string, string> {
 			const icon = group.slice(0, c);
 			for (const base of group.slice(c + 1).split(",")) {
 				for (const [pre, suf] of VARIANTS) {
-					out[`${pre}${base}${suf}`] = icon;
+					out[pre + base + suf] = icon;
 				}
 			}
 		}
