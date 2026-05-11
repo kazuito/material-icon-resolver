@@ -1,12 +1,16 @@
 "use client";
 
 import {
-  type CdnProvider,
-  type FallbackMode,
   metadata,
   type ResolveMaterialIconOptions,
   resolveMaterialIcon,
 } from "material-icon-resolver";
+import {
+  parseAsBoolean,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryStates,
+} from "nuqs";
 import { useMemo, useState } from "react";
 import { Header } from "./header";
 import { PathInput } from "./path-input";
@@ -15,12 +19,20 @@ import { type ResolvedItem, ResultRow } from "./result-row";
 import { Stats, type StatsValue } from "./stats";
 import { Toolbar } from "./toolbar";
 
+const CDN_VALUES = ["jsdelivr", "unpkg"] as const;
+const FALLBACK_VALUES = ["match", "file", "folder", "none"] as const;
+
+const queryParsers = {
+  cdn: parseAsStringLiteral(CDN_VALUES).withDefault("jsdelivr"),
+  fallback: parseAsStringLiteral(FALLBACK_VALUES).withDefault("match"),
+  version: parseAsString.withDefault(""),
+  open: parseAsBoolean.withDefault(false),
+};
+
 export function IconResolver() {
   const [paths, setPaths] = useState(DEFAULT_PATHS);
-  const [cdn, setCdn] = useState<CdnProvider>("jsdelivr");
-  const [fallback, setFallback] = useState<FallbackMode | "match">("match");
-  const [version, setVersion] = useState("");
-  const [open, setOpen] = useState(false);
+  const [{ cdn, fallback, version, open }, setOptions] =
+    useQueryStates(queryParsers);
 
   const items = useMemo<ResolvedItem[]>(() => {
     const lines = paths
@@ -71,13 +83,13 @@ export function IconResolver() {
         <div className="space-y-4 lg:sticky lg:top-6 lg:col-span-2">
           <Toolbar
             cdn={cdn}
-            onCdnChange={setCdn}
+            onCdnChange={(v) => setOptions({ cdn: v })}
             fallback={fallback}
-            onFallbackChange={setFallback}
+            onFallbackChange={(v) => setOptions({ fallback: v })}
             version={version}
-            onVersionChange={setVersion}
+            onVersionChange={(v) => setOptions({ version: v })}
             open={open}
-            onOpenChange={setOpen}
+            onOpenChange={(v) => setOptions({ open: v })}
             versionPlaceholder={metadata.upstreamVersion}
           />
           <PathInput value={paths} onChange={setPaths} />
