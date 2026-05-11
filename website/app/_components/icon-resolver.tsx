@@ -67,32 +67,36 @@ export function IconResolver() {
     <div className="space-y-4">
       <Header entries={stats.total} />
 
-      <Toolbar
-        cdn={cdn}
-        onCdnChange={setCdn}
-        fallback={fallback}
-        onFallbackChange={setFallback}
-        version={version}
-        onVersionChange={setVersion}
-        open={open}
-        onOpenChange={setOpen}
-        versionPlaceholder={metadata.upstreamVersion}
-      />
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-start lg:gap-8">
+        <div className="space-y-4 lg:sticky lg:top-6">
+          <Toolbar
+            cdn={cdn}
+            onCdnChange={setCdn}
+            fallback={fallback}
+            onFallbackChange={setFallback}
+            version={version}
+            onVersionChange={setVersion}
+            open={open}
+            onOpenChange={setOpen}
+            versionPlaceholder={metadata.upstreamVersion}
+          />
+          <PathInput value={paths} onChange={setPaths} />
+        </div>
 
-      <PathInput value={paths} onChange={setPaths} />
-
-      <Stats stats={stats} />
-
-      <div className="flex flex-col gap-px">
-        {items.length === 0 ? (
-          <div className="py-14 text-center font-mono text-xs text-muted-foreground">
-            no paths — paste some above
+        <div className="space-y-3">
+          <Stats stats={stats} />
+          <div className="flex flex-col gap-px">
+            {items.length === 0 ? (
+              <div className="py-14 text-center font-mono text-xs text-muted-foreground">
+                no paths
+              </div>
+            ) : (
+              items.map((item, i) => (
+                <ResultRow key={`${item.raw}-${i}`} item={item} open={open} />
+              ))
+            )}
           </div>
-        ) : (
-          items.map((item, i) => (
-            <ResultRow key={`${item.raw}-${i}`} item={item} open={open} />
-          ))
-        )}
+        </div>
       </div>
 
       <footer className="mt-6 flex justify-between border-t border-border pt-4 font-mono text-xs tracking-wider text-muted-foreground/60">
