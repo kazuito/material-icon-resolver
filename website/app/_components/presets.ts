@@ -4,6 +4,8 @@ export const PRESETS: Preset[] = [
   {
     label: "mixed",
     paths: [
+      "unknown_file",
+      "unknown_folder/",
       "src/",
       "src/index.ts",
       "src/App.tsx",
@@ -26,6 +28,7 @@ export const PRESETS: Preset[] = [
   {
     label: "files",
     paths: [
+      "unknown_file",
       "index.ts",
       "index.js",
       "App.tsx",
@@ -56,6 +59,7 @@ export const PRESETS: Preset[] = [
   {
     label: "folders",
     paths: [
+      "unknown_folder/",
       "src/",
       "public/",
       "dist/",
