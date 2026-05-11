@@ -9,9 +9,6 @@ import {
 import {
   defaultFolder,
   folderNames,
-  folderNamesExpanded,
-  rootFolderNames,
-  rootFolderNamesExpanded,
 } from "../src/generated/folder-icons.ts";
 import { metadata } from "../src/generated/metadata.ts";
 
@@ -21,9 +18,6 @@ const allMaps = {
   fileExtensions,
   languageIds,
   folderNames,
-  folderNamesExpanded,
-  rootFolderNames,
-  rootFolderNamesExpanded,
 };
 
 describe("generated map invariants", () => {
@@ -60,18 +54,23 @@ describe("generated map invariants", () => {
     }
   });
 
-  it("folderNamesExpanded shares keys with folderNames", () => {
-    // Current generator copies the map; surface a regression if that changes
-    // without also updating the runtime that switches on `open`.
-    expect(Object.keys(folderNamesExpanded).sort()).toEqual(
-      Object.keys(folderNames).sort(),
-    );
+  it("folderNames re-expansion produces all 5 prefix variants for known bases", () => {
+    // Generated folderNames is built at module load by re-expanding a packed
+    // base list. This spot-check guards against the expansion accidentally
+    // producing fewer variants (which would silently break lookups for
+    // `.src`, `_src`, etc.).
+    for (const base of ["src", "test", "config", "node"]) {
+      const icon = folderNames[base];
+      expect(icon, `bare base="${base}"`).toBeTypeOf("string");
+      for (const v of [`.${base}`, `_${base}`, `-${base}`, `__${base}__`]) {
+        expect(folderNames[v], `variant="${v}"`).toBe(icon);
+      }
+    }
   });
 
-  it("rootFolderNamesExpanded shares keys with rootFolderNames", () => {
-    expect(Object.keys(rootFolderNamesExpanded).sort()).toEqual(
-      Object.keys(rootFolderNames).sort(),
-    );
+  it("folderNames contains a reasonable number of entries", () => {
+    // Lower bound prevents an empty/degenerate generation from sneaking in.
+    expect(Object.keys(folderNames).length).toBeGreaterThan(1000);
   });
 });
 

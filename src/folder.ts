@@ -1,9 +1,6 @@
 import {
   defaultFolder,
   folderNames,
-  folderNamesExpanded,
-  rootFolderNames,
-  rootFolderNamesExpanded,
 } from "./generated/folder-icons.ts";
 import { getBasename, normalizePath } from "./normalize.ts";
 import { type Hit, makeResult } from "./result.ts";
@@ -28,17 +25,15 @@ export type ResolveMaterialFolderIconOptions = Omit<
   fallback?: Extract<FallbackMode, "folder" | "none">;
 };
 
-function lookupFolder(path: string, open: boolean): Hit | null {
+function lookupFolder(path: string): Hit | null {
   const normalized = normalizePath(path);
   const basename = getBasename(normalized).toLowerCase();
   if (basename.length === 0) return null;
 
-  const rootMap = open ? rootFolderNamesExpanded : rootFolderNames;
-  const rootHit = rootMap[basename];
-  if (rootHit) return { name: rootHit, source: "rootFolderNames" };
-
-  const folderMap = open ? folderNamesExpanded : folderNames;
-  const folderHit = folderMap[basename];
+  // The `-open` suffix is appended to the SVG filename in `makeResult`, so the
+  // icon name itself is the same whether the folder is open or closed — we
+  // only need a single lookup table.
+  const folderHit = folderNames[basename];
   if (folderHit) return { name: folderHit, source: "folderNames" };
 
   return null;
@@ -57,7 +52,7 @@ export function resolveMaterialFolderIcon(
 ): ResolvedMaterialIcon | null {
   const opts = options ?? {};
   const open = opts.open ?? false;
-  const hit = lookupFolder(path, open);
+  const hit = lookupFolder(path);
 
   if (hit) return makeResult(hit, "folder", open, opts);
 

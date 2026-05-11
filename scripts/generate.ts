@@ -207,8 +207,10 @@ function buildFolderMaps(theme: {
   }>;
 }) {
   const folderNames: Record<string, string> = {};
-  const rootFolderNames: Record<string, string> = {};
 
+  // The `specific` theme produces no `rootFolderNames` today and the runtime
+  // does not consult them. We deliberately don't ship them — re-add the
+  // collection here if a future theme starts using them.
   for (const icon of theme.icons ?? []) {
     if (!isEnabled(icon)) continue;
     for (const raw of icon.folderNames ?? []) {
@@ -216,22 +218,10 @@ function buildFolderMaps(theme: {
         folderNames[v.toLowerCase()] = icon.name;
       }
     }
-    for (const raw of icon.rootFolderNames ?? []) {
-      for (const v of folderNameVariants(raw)) {
-        rootFolderNames[v.toLowerCase()] = icon.name;
-      }
-    }
   }
-  // folderNamesExpanded / rootFolderNamesExpanded share the keys but the
-  // caller appends `-open` to filename. We keep the value identical to the
-  // regular map for consistency.
-  return {
-    folderNames,
-    folderNamesExpanded: { ...folderNames },
-    rootFolderNames,
-    rootFolderNamesExpanded: { ...rootFolderNames },
-  };
+  return { folderNames };
 }
+
 
 function sortRecord(r: Record<string, string>): Record<string, string> {
   const out: Record<string, string> = {};
@@ -245,6 +235,179 @@ function serializeRecord(name: string, r: Record<string, string>): string {
     ([k, v]) => `\t${JSON.stringify(k)}: ${JSON.stringify(v)},`,
   );
   return `export const ${name}: Record<string, string> = {\n${lines.join("\n")}\n};\n`;
+}
+
+// Folder-name compression --------------------------------------------------
+//
+// Most upstream folder names produce 5 sibling keys via `folderNameVariants`
+// (bare, `.x`, `_x`, `-x`, `__x__`) that all map to the same icon. Storing
+// them inflates the bundle ~5x for no information gain. We compress by
+// extracting bases whose 5 variants survived to the FINAL map untouched
+// (no overwrite by a different icon) and re-expanding at runtime.
+//
+// Behavior is byte-identical to a verbose map: a verifier below builds the
+// expanded map from PACKED + EXTRAS and asserts deep equality with the
+// source. If anything ever drifts, generation fails.
+
+const VARIANT_PREFIX_SUFFIX: ReadonlyArray<readonly [string, string]> = [
+  ["", ""],
+  [".", ""],
+  ["_", ""],
+  ["-", ""],
+  ["__", "__"],
+];
+
+const PACKED_DELIMITERS = /[,;:]/;
+
+function compressFolderNames(folderNames: Record<string, string>): {
+  packed: string;
+  extras: Record<string, string>;
+} {
+  const remaining = new Map(Object.entries(folderNames));
+  const grouped = new Map<string, string[]>();
+
+  // Sort base candidates so output is deterministic across runs.
+  for (const base of [...remaining.keys()].sort()) {
+    if (!remaining.has(base)) continue;
+    if (PACKED_DELIMITERS.test(base)) continue;
+
+    const icon = remaining.get(base);
+    if (icon === undefined) continue;
+    if (PACKED_DELIMITERS.test(icon)) continue;
+
+    const variants = VARIANT_PREFIX_SUFFIX.map(
+      ([pre, suf]) => `${pre}${base}${suf}`,
+    );
+
+    let allMatch = true;
+    for (const v of variants) {
+      if (remaining.get(v) !== icon) {
+        allMatch = false;
+        break;
+      }
+    }
+    if (!allMatch) continue;
+
+    for (const v of variants) remaining.delete(v);
+    let list = grouped.get(icon);
+    if (!list) {
+      list = [];
+      grouped.set(icon, list);
+    }
+    list.push(base);
+  }
+
+  const sortedGroups = [...grouped.entries()]
+    .map(([icon, bases]) => [icon, [...bases].sort()] as const)
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+
+  const packed = sortedGroups
+    .map(([icon, bases]) => `${icon}:${bases.join(",")}`)
+    .join(";");
+
+  const extrasSorted = [...remaining.entries()].sort(([a], [b]) =>
+    a < b ? -1 : a > b ? 1 : 0,
+  );
+  const extras: Record<string, string> = {};
+  for (const [k, v] of extrasSorted) extras[k] = v;
+
+  return { packed, extras };
+}
+
+function expandPacked(
+  packed: string,
+  extras: Record<string, string>,
+): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (packed.length > 0) {
+    for (const group of packed.split(";")) {
+      const c = group.indexOf(":");
+      const icon = group.slice(0, c);
+      for (const base of group.slice(c + 1).split(",")) {
+        for (const [pre, suf] of VARIANT_PREFIX_SUFFIX) {
+          out[`${pre}${base}${suf}`] = icon;
+        }
+      }
+    }
+  }
+  for (const k of Object.keys(extras)) out[k] = extras[k] as string;
+  return out;
+}
+
+function assertCompressionRoundTrip(
+  source: Record<string, string>,
+  packed: string,
+  extras: Record<string, string>,
+): void {
+  const rebuilt = expandPacked(packed, extras);
+  const srcKeys = Object.keys(source).sort();
+  const rebuiltKeys = Object.keys(rebuilt).sort();
+  if (srcKeys.length !== rebuiltKeys.length) {
+    throw new Error(
+      `folderNames compression key-count mismatch: source=${srcKeys.length} rebuilt=${rebuiltKeys.length}`,
+    );
+  }
+  for (let i = 0; i < srcKeys.length; i++) {
+    if (srcKeys[i] !== rebuiltKeys[i]) {
+      throw new Error(
+        `folderNames compression key mismatch at index ${i}: source=${srcKeys[i]} rebuilt=${rebuiltKeys[i]}`,
+      );
+    }
+  }
+  for (const k of srcKeys) {
+    if (source[k] !== rebuilt[k]) {
+      throw new Error(
+        `folderNames compression value mismatch for key="${k}": source=${source[k]} rebuilt=${rebuilt[k]}`,
+      );
+    }
+  }
+}
+
+function serializeCompressedFolderNames(
+  folderNames: Record<string, string>,
+): string {
+  const { packed, extras } = compressFolderNames(folderNames);
+  assertCompressionRoundTrip(folderNames, packed, extras);
+
+  const extrasLines = Object.entries(extras)
+    .map(([k, v]) => `\t${JSON.stringify(k)}: ${JSON.stringify(v)},`)
+    .join("\n");
+  const extrasBody = extrasLines.length > 0 ? `\n${extrasLines}\n` : "";
+
+  return (
+    "// PACKED stores bases whose 5 variants (bare, .x, _x, -x, __x__) all\n" +
+    "// map to one icon — they are re-expanded at module load. EXTRAS holds\n" +
+    "// any leftover keys that didn't fit the variant pattern. The runtime\n" +
+    "// `folderNames` export is identical to the pre-compression source map.\n" +
+    `const PACKED =\n\t${JSON.stringify(packed)};\n\n` +
+    `const EXTRAS: Record<string, string> = {${extrasBody}};\n\n` +
+    "const VARIANTS: ReadonlyArray<readonly [string, string]> = [\n" +
+    '\t["", ""],\n' +
+    '\t[".", ""],\n' +
+    '\t["_", ""],\n' +
+    '\t["-", ""],\n' +
+    '\t["__", "__"],\n' +
+    "];\n\n" +
+    "function expandFolderNames(): Record<string, string> {\n" +
+    "\tconst out: Record<string, string> = {};\n" +
+    "\tif (PACKED.length > 0) {\n" +
+    '\t\tfor (const group of PACKED.split(";")) {\n' +
+    '\t\t\tconst c = group.indexOf(":");\n' +
+    "\t\t\tconst icon = group.slice(0, c);\n" +
+    '\t\t\tfor (const base of group.slice(c + 1).split(",")) {\n' +
+    "\t\t\t\tfor (const [pre, suf] of VARIANTS) {\n" +
+    "\t\t\t\t\tout[`${pre}${base}${suf}`] = icon;\n" +
+    "\t\t\t\t}\n" +
+    "\t\t\t}\n" +
+    "\t\t}\n" +
+    "\t}\n" +
+    "\tfor (const k of Object.keys(EXTRAS)) {\n" +
+    "\t\tout[k] = EXTRAS[k] as string;\n" +
+    "\t}\n" +
+    "\treturn out;\n" +
+    "}\n\n" +
+    "export const folderNames: Record<string, string> = expandFolderNames();\n"
+  );
 }
 
 function gitHeadCommit(repo: string): string {
@@ -310,19 +473,9 @@ async function main() {
 
   const folderIconsTs =
     header +
-    serializeRecord("folderNames", folderMaps.folderNames) +
+    serializeCompressedFolderNames(folderMaps.folderNames) +
     "\n" +
-    serializeRecord("folderNamesExpanded", folderMaps.folderNamesExpanded) +
-    "\n" +
-    serializeRecord("rootFolderNames", folderMaps.rootFolderNames) +
-    "\n" +
-    serializeRecord(
-      "rootFolderNamesExpanded",
-      folderMaps.rootFolderNamesExpanded,
-    ) +
-    "\n" +
-    `export const defaultFolder = ${JSON.stringify(theme.defaultIcon.name)};\n` +
-    `export const defaultRootFolder = ${JSON.stringify(theme.rootFolder?.name ?? "folder-root")};\n`;
+    `export const defaultFolder = ${JSON.stringify(theme.defaultIcon.name)};\n`;
 
   const metadataTs =
     header +
@@ -355,10 +508,7 @@ async function main() {
       `fileExtensions=${Object.keys(fileMaps.fileExtensions).length} ` +
       `languageIds=${Object.keys(languageIds).length}`,
   );
-  console.log(
-    `folderNames=${Object.keys(folderMaps.folderNames).length} ` +
-      `rootFolderNames=${Object.keys(folderMaps.rootFolderNames).length}`,
-  );
+  console.log(`folderNames=${Object.keys(folderMaps.folderNames).length}`);
   console.log("done");
 }
 
