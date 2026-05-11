@@ -13,6 +13,7 @@
     "url": "https://github.com/kazuito/material-icon-resolver/issues"
   },
   "type": "module",
+  "packageManager": "pnpm@11.0.9",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.cts",
