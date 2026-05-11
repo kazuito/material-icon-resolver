@@ -1,7 +1,4 @@
-import {
-  defaultFolder,
-  folderNames,
-} from "./generated/folder-icons.ts";
+import { defaultFolder, folderNames } from "./generated/folder-icons.ts";
 import { getBasename, normalizePath } from "./normalize.ts";
 import { type Hit, makeResult } from "./result.ts";
 import type {

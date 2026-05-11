@@ -222,7 +222,6 @@ function buildFolderMaps(theme: {
   return { folderNames };
 }
 
-
 // Folder-name compression --------------------------------------------------
 //
 // Most upstream folder names produce 5 sibling keys via `folderNameVariants`

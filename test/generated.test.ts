@@ -6,10 +6,7 @@ import {
   fileNamesWithPath,
   languageIds,
 } from "../src/generated/file-icons.ts";
-import {
-  defaultFolder,
-  folderNames,
-} from "../src/generated/folder-icons.ts";
+import { defaultFolder, folderNames } from "../src/generated/folder-icons.ts";
 import { metadata } from "../src/generated/metadata.ts";
 
 const allMaps = {
