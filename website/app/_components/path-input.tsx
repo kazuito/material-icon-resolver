@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { DEFAULT_PATHS, PRESETS } from "./presets";
+import { PRESETS } from "./presets";
 
 type Props = {
   value: string;
@@ -40,14 +40,6 @@ export function PathInput({ value, onChange }: Props) {
             className="font-mono text-muted-foreground"
           >
             clear
-          </Button>
-          <Button
-            size="xs"
-            variant="outline"
-            onClick={() => onChange(DEFAULT_PATHS)}
-            className="font-mono text-muted-foreground"
-          >
-            reset
           </Button>
         </div>
       </div>
