@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { InstallCommand } from "./_components/install-command";
 
 const NPM_URL = "https://www.npmjs.com/package/material-icon-resolver";
 const REPO_URL = "https://github.com/kazuito/material-icon-resolver";
@@ -93,11 +94,3 @@ export default function Home() {
   );
 }
 
-function InstallCommand({ cmd }: { cmd: string }) {
-  return (
-    <div className="flex items-center gap-2 rounded-md border border-border bg-card/40 px-3 py-2 text-foreground/90">
-      <span className="text-muted-foreground/50 select-none">$</span>
-      <code className="">{cmd}</code>
-    </div>
-  );
-}
