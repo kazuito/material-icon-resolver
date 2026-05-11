@@ -1,6 +1,6 @@
 packages:
-  - "."
   - "website"
+  - "."
 
 allowBuilds:
   esbuild: true
