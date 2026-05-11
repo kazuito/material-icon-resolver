@@ -45,6 +45,7 @@ export function ResultRow({ item, open }: Props) {
         <span>
           {pathSegments(item.raw).map((seg, j) => (
             <span
+              // biome-ignore lint/suspicious/noArrayIndexKey: segments are derived deterministically from item.raw and rendered in order
               key={`${seg.cls}-${j}`}
               className={
                 seg.cls === "p"

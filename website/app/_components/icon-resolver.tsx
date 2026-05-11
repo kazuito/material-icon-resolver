@@ -104,6 +104,7 @@ export function IconResolver() {
               </div>
             ) : (
               items.map((item, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: index disambiguates duplicate raw entries in the user-typed list
                 <ResultRow key={`${item.raw}-${i}`} item={item} open={open} />
               ))
             )}

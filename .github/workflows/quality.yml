@@ -53,3 +53,12 @@ jobs:
 
       - name: Verify npm package contents
         run: pnpm pack --dry-run
+
+      - name: Lint (website)
+        run: pnpm --filter website lint
+
+      - name: Typecheck (website)
+        run: pnpm --filter website typecheck
+
+      - name: Build (website)
+        run: pnpm --filter website build
