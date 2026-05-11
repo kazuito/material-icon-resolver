@@ -67,8 +67,8 @@ export function IconResolver() {
     <div className="space-y-4">
       <Header entries={stats.total} />
 
-      <div className="grid gap-4 lg:grid-cols-2 lg:items-start lg:gap-8">
-        <div className="space-y-4 lg:sticky lg:top-6">
+      <div className="grid gap-4 lg:grid-cols-5 lg:items-start lg:gap-8">
+        <div className="space-y-4 lg:sticky lg:top-6 lg:col-span-2">
           <Toolbar
             cdn={cdn}
             onCdnChange={setCdn}
@@ -83,7 +83,7 @@ export function IconResolver() {
           <PathInput value={paths} onChange={setPaths} />
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 lg:col-start-3 lg:col-span-3">
           <Stats stats={stats} />
           <div className="flex flex-col gap-px">
             {items.length === 0 ? (
