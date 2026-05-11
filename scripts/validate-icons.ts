@@ -48,9 +48,7 @@ async function main() {
   ]);
   const folderIconNames = new Set<string>([
     folder.defaultFolder,
-    folder.defaultRootFolder,
     ...Object.values<string>(folder.folderNames),
-    ...Object.values<string>(folder.rootFolderNames),
   ]);
 
   const expectedFilenames = new Set<string>();
