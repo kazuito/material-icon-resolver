@@ -22,6 +22,14 @@ export function PathInput({ value, onChange }: Props) {
           </span>
         </div>
         <div className="flex flex-wrap gap-1.5">
+          <Button
+            size="xs"
+            variant="ghost"
+            onClick={() => onChange("")}
+            className="font-mono text-muted-foreground"
+          >
+            clear
+          </Button>
           {PRESETS.map((p) => (
             <Button
               key={p.label}
@@ -33,14 +41,6 @@ export function PathInput({ value, onChange }: Props) {
               {p.label}
             </Button>
           ))}
-          <Button
-            size="xs"
-            variant="outline"
-            onClick={() => onChange("")}
-            className="font-mono text-muted-foreground"
-          >
-            clear
-          </Button>
         </div>
       </div>
       <Textarea
