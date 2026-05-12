@@ -79,8 +79,7 @@
     "format": "biome format --write",
     "check": "pnpm biome check --write && pnpm typecheck && pnpm test",
     "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build",
-    "prepare": "husky",
-    "try": "pnpm dlx serve . & open http://localhost:3000/try.html"
+    "prepare": "husky"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
