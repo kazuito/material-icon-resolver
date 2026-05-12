@@ -2,9 +2,12 @@
   "name": "material-icon-resolver",
   "version": "0.1.4",
   "description": "Resolve Material Icon Theme icon names, filenames, and CDN URLs from a file path, folder path, or language ID.",
-  "author": "kazuito",
+  "author": {
+    "name": "Kazuma Ito",
+    "url": "https://github.com/kazuito"
+  },
   "license": "MIT",
-  "homepage": "https://github.com/kazuito/material-icon-resolver#readme",
+  "homepage": "https://material-icon-resolver.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kazuito/material-icon-resolver.git"
@@ -13,7 +16,15 @@
     "url": "https://github.com/kazuito/material-icon-resolver/issues"
   },
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "packageManager": "pnpm@11.0.9",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.cts",
@@ -64,10 +75,11 @@
   },
   "keywords": [
     "material-icon-theme",
-    "icons",
-    "vscode",
+    "material-icons",
+    "vscode-icons",
     "file-icons",
-    "folder-icons"
+    "folder-icons",
+    "icon-resolver"
   ],
   "scripts": {
     "build": "tsdown",
