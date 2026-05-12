@@ -22,14 +22,16 @@ export function PathInput({ value, onChange }: Props) {
           </span>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          <Button
-            size="xs"
-            variant="ghost"
-            onClick={() => onChange("")}
-            className="font-mono text-muted-foreground"
-          >
-            clear
-          </Button>
+          {value && (
+            <Button
+              size="xs"
+              variant="ghost"
+              onClick={() => onChange("")}
+              className="font-mono text-muted-foreground"
+            >
+              clear
+            </Button>
+          )}
           {PRESETS.map((p) => (
             <Button
               key={p.label}
