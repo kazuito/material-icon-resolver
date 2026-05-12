@@ -77,10 +77,10 @@ export function IconResolver() {
 
   return (
     <div className="space-y-4">
-      <Header entries={stats.total} />
-
       <div className="grid gap-4 lg:grid-cols-5 lg:items-start lg:gap-8">
         <div className="space-y-4 lg:sticky lg:top-6 lg:col-span-2">
+          <Header entries={stats.total} />
+
           <Toolbar
             cdn={cdn}
             onCdnChange={(v) => setOptions({ cdn: v })}

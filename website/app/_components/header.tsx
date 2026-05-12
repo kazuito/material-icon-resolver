@@ -1,13 +1,13 @@
 import { metadata } from "material-icon-resolver";
+import Link from "next/link";
 
 export function Header({ entries }: { entries: number }) {
   return (
-    <header className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-baseline sm:justify-between">
+    <header className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
       <div className="flex items-baseline gap-2.5">
-        <h1 className="font-mono text-sm font-medium tracking-tight text-foreground">
+        <Link href="/" className="font-mono text-sm font-medium tracking-tight text-foreground">
           material-icon-resolver
-        </h1>
-        <span className="text-muted-foreground">Live</span>
+        </Link>
       </div>
       <div className="flex gap-4 font-mono text-xs text-muted-foreground">
         <span>
