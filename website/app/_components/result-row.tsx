@@ -1,10 +1,28 @@
-import { ArrowUpRight } from "lucide-react";
+"use client";
+
+import {
+  Code,
+  Copy,
+  Download,
+  ExternalLink,
+  Link as LinkIcon,
+  MoreHorizontal,
+  Type,
+} from "lucide-react";
 import type {
   IconType,
   ResolvedMaterialIcon,
   ResolveSource,
 } from "material-icon-resolver";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 export type ResolvedItem = {
@@ -79,19 +97,93 @@ export function ResultRow({ item, open }: Props) {
       </span>
 
       {item.result ? (
-        <a
-          href={item.result.cdnUrl}
-          target="_blank"
-          rel="noreferrer"
-          title={item.result.cdnUrl}
-          className="flex size-6 items-center justify-center rounded text-muted-foreground/50 transition-colors hover:bg-lime-soft hover:text-lime"
-        >
-          <ArrowUpRight className="size-3.5" />
-        </a>
+        <RowActions result={item.result} />
       ) : (
         <span className="invisible size-6" />
       )}
     </div>
+  );
+}
+
+function RowActions({ result }: { result: ResolvedMaterialIcon }) {
+  const copy = (text: string) => {
+    void navigator.clipboard.writeText(text).catch(() => {});
+  };
+
+  const copySvg = async () => {
+    try {
+      const res = await fetch(result.cdnUrl);
+      if (!res.ok) return;
+      const text = await res.text();
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // ignore
+    }
+  };
+
+  const downloadSvg = async () => {
+    try {
+      const res = await fetch(result.cdnUrl);
+      if (!res.ok) return;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${result.name}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch {
+      // ignore
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        aria-label="Icon actions"
+        className="flex size-6 items-center justify-center rounded text-muted-foreground/50 transition-colors hover:bg-lime-soft hover:text-lime data-[popup-open]:bg-lime-soft data-[popup-open]:text-lime"
+      >
+        <MoreHorizontal className="size-3.5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem
+          render={
+            <Link
+              href={result.cdnUrl}
+              target="_blank"
+              rel="noreferrer noopener"
+            />
+          }
+        >
+          <ExternalLink />
+          Open CDN URL
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => copy(result.cdnUrl)}>
+          <LinkIcon />
+          Copy CDN URL
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => copy(result.name)}>
+          <Type />
+          Copy icon name
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => copy(result.filename)}>
+          <Copy />
+          Copy filename
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={copySvg}>
+          <Code />
+          Copy as SVG
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={downloadSvg}>
+          <Download />
+          Download SVG
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

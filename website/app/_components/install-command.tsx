@@ -36,7 +36,7 @@ export function InstallCommand({ cmd }: { cmd: string }) {
           {copied ? (
             <motion.span
               key="check"
-              initial={{ scale: 0.9, opacity: 0, rotate : -20 }}
+              initial={{ scale: 0.9, opacity: 0, rotate: -20 }}
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
               exit={{ scale: 0.9, opacity: 0, rotate: -20 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
@@ -47,7 +47,7 @@ export function InstallCommand({ cmd }: { cmd: string }) {
           ) : (
             <motion.span
               key="copy"
-              initial={{ scale: 0.9, opacity: 0, rotate : 20 }}
+              initial={{ scale: 0.9, opacity: 0, rotate: 20 }}
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
               exit={{ scale: 0.9, opacity: 0, rotate: 20 }}
               transition={{ duration: 0.15, ease: "easeOut" }}

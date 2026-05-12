@@ -11,7 +11,7 @@ export type StatsValue = {
 
 export function Stats({ stats }: { stats: StatsValue }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-border py-2.5 font-mono text-xs">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-y py-2.5 font-mono text-xs">
       <Item label="total" value={stats.total} />
       <Sep />
       <Item label="matched" value={stats.resolved} tone="lime" />

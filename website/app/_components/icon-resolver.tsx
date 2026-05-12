@@ -77,22 +77,23 @@ export function IconResolver() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-5 lg:items-start lg:gap-8">
-        <div className="space-y-4 lg:sticky lg:top-6 lg:col-span-2">
-          <Header entries={stats.total} />
-
-          <Toolbar
-            cdn={cdn}
-            onCdnChange={(v) => setOptions({ cdn: v })}
-            fallback={fallback}
-            onFallbackChange={(v) => setOptions({ fallback: v })}
-            version={version}
-            onVersionChange={(v) => setOptions({ version: v })}
-            open={open}
-            onOpenChange={(v) => setOptions({ open: v })}
-            versionPlaceholder={metadata.upstreamVersion}
-          />
-          <PathInput value={paths} onChange={setPaths} />
+      <div className="grid gap-4 lg:grid-cols-5 pb-6 lg:items-start lg:gap-8">
+        <div className="lg:sticky top-0 lg:col-span-2">
+          <Header />
+          <div className="space-y-4">
+            <Toolbar
+              cdn={cdn}
+              onCdnChange={(v) => setOptions({ cdn: v })}
+              fallback={fallback}
+              onFallbackChange={(v) => setOptions({ fallback: v })}
+              version={version}
+              onVersionChange={(v) => setOptions({ version: v })}
+              open={open}
+              onOpenChange={(v) => setOptions({ open: v })}
+              versionPlaceholder={metadata.upstreamVersion}
+            />
+            <PathInput value={paths} onChange={setPaths} />
+          </div>
         </div>
 
         <div className="space-y-3 lg:col-start-3 lg:col-span-3">
@@ -111,13 +112,6 @@ export function IconResolver() {
           </div>
         </div>
       </div>
-
-      <footer className="mt-6 flex justify-between border-t border-border pt-4 font-mono text-xs tracking-wider text-muted-foreground/60">
-        <span>material-icon-resolver</span>
-        <span>
-          {stats.resolved}/{stats.total} resolved
-        </span>
-      </footer>
     </div>
   );
 }
