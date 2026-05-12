@@ -142,10 +142,12 @@ function RowActions({ result }: { result: ResolvedMaterialIcon }) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button size="icon-sm" aria-label="Icon actions" variant="ghost">
-          <MoreHorizontal className="size-3.5" />
-        </Button>
+      <DropdownMenuTrigger
+        render={
+          <Button size="icon-sm" aria-label="Icon actions" variant="ghost" />
+        }
+      >
+        <MoreHorizontal className="size-3.5" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem

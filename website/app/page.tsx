@@ -11,15 +11,12 @@ export default function Home() {
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col justify-center px-5 py-16 sm:px-6">
       <div className="space-y-10">
         <div className="space-y-5">
-          <p className="font-mono text-xs tracking-wider text-muted-foreground/70 uppercase">
-            material-icon-theme · resolver
-          </p>
           <h1 className="font-mono text-3xl font-medium tracking-tight text-foreground sm:text-4xl">
-            material-icon-resolver
+            Material Icon Resolver
           </h1>
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
-            Resolve Material Icon Theme icon names, filenames, and CDN URLs from
-            a file path, folder path, or language ID.
+            npm library that resolves Material Icon Theme icon names, filenames,
+            and CDN URLs from a file path, folder path, or language ID.
           </p>
         </div>
 
