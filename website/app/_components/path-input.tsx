@@ -49,7 +49,7 @@ export function PathInput({ value, onChange }: Props) {
         spellCheck={false}
         placeholder="one path per line — append / for folders"
         rows={9}
-        className="min-h-40 resize-y px-3 py-2.5 font-mono text-sm leading-relaxed caret-lime pointer-coarse:text-base max-sm:h-60"
+        className="min-h-40 resize-y px-3 py-2.5 font-mono text-sm leading-relaxed caret-lime pointer-coarse:text-base max-md:h-60"
       />
     </section>
   );

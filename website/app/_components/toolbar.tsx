@@ -33,7 +33,7 @@ export function Toolbar(p: Props) {
             if (next) p.onCdnChange(next);
           }}
           size="sm"
-          className="border border-input bg-input/30 p-0.5"
+          variant="outline"
         >
           {CDN_OPTIONS.map((v) => (
             <ToggleGroupItem key={v} value={v} className="font-mono">
@@ -51,7 +51,7 @@ export function Toolbar(p: Props) {
             if (next) p.onFallbackChange(next);
           }}
           size="sm"
-          className="border border-input bg-input/30 p-0.5"
+          variant="outline"
         >
           {FALLBACK_OPTIONS.map((v) => (
             <ToggleGroupItem key={v} value={v} className="font-mono">

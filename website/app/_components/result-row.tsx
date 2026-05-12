@@ -16,6 +16,7 @@ import type {
 } from "material-icon-resolver";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -141,13 +142,12 @@ function RowActions({ result }: { result: ResolvedMaterialIcon }) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        aria-label="Icon actions"
-        className="flex size-6 items-center justify-center rounded text-muted-foreground/50 transition-colors hover:bg-lime-soft hover:text-lime data-[popup-open]:bg-lime-soft data-[popup-open]:text-lime"
-      >
-        <MoreHorizontal className="size-3.5" />
+      <DropdownMenuTrigger>
+        <Button size="icon-sm" aria-label="Icon actions" variant="ghost">
+          <MoreHorizontal className="size-3.5" />
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent align="end">
         <DropdownMenuItem
           render={
             <Link
