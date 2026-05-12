@@ -4,7 +4,7 @@ Resolve [Material Icon Theme](https://github.com/material-extensions/vscode-mate
 
 Zero dependencies. ESM + CJS. Node, Bun, Deno, browser.
 
-### [▶ Try it online](https://material-icon-resolver.vercel.app/try)
+**[▶ Try it online](https://material-icon-resolver.vercel.app/try)** — interactive playground, no install needed.
 
 ## Install
 
