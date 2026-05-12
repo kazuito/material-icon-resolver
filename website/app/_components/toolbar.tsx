@@ -71,15 +71,18 @@ export function Toolbar(p: Props) {
         />
       </Field>
 
-      <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+      <label
+        htmlFor="folder-open-switch"
+        className="ml-auto flex cursor-pointer select-none items-center gap-2 text-xs text-muted-foreground"
+      >
         <Switch
+          id="folder-open-switch"
           checked={p.open}
           onCheckedChange={(v) => p.onOpenChange(Boolean(v))}
           size="sm"
-          aria-label="folder · open"
         />
         <span className={p.open ? "text-foreground" : ""}>folder · open</span>
-      </div>
+      </label>
     </div>
   );
 }
