@@ -1,10 +1,11 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/lib/site";
 import { InstallCommand } from "./_components/install-command";
 
-const NPM_URL = "https://www.npmjs.com/package/material-icon-resolver";
-const REPO_URL = "https://github.com/kazuito/material-icon-resolver";
+const NPM_URL = siteConfig.npm;
+const REPO_URL = siteConfig.repo;
 
 export default function Home() {
   return (
