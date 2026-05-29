@@ -1,0 +1,76 @@
+name: Watch upstream
+
+# Detect new vscode-material-icon-theme *release tags* and open an issue that
+# asks Claude to perform the bump. Pairs with claude.yml, which picks up the
+# @claude mention and runs the actual update via the bump-upstream skill.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+  workflow_dispatch: # allow manual runs for testing
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: upstream-watch
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Check for new upstream release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Compare pinned version against latest upstream release
+        id: ver
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Currently pinned version (the generated table is built for this exact release).
+          current="$(grep -oP 'upstreamVersion:\s*"\K[^"]+' src/generated/metadata.ts)"
+          # Latest *published release* — never main HEAD, whose SVGs aren't on the CDN yet.
+          latest_tag="$(gh api repos/material-extensions/vscode-material-icon-theme/releases/latest --jq .tag_name)"
+          latest="${latest_tag#v}"
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          echo "latest_tag=$latest_tag" >> "$GITHUB_OUTPUT"
+          if [ "$current" != "$latest" ]; then
+            echo "outdated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "outdated=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "pinned=$current latest=$latest_tag" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open bump issue (if a newer release exists)
+        if: steps.ver.outputs.outdated == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LATEST_TAG: ${{ steps.ver.outputs.latest_tag }}
+          CURRENT: ${{ steps.ver.outputs.current }}
+        run: |
+          set -euo pipefail
+          title="Bump upstream to ${LATEST_TAG}"
+          # Don't nag: skip if an issue with this title already exists (open or closed/declined).
+          existing="$(gh issue list --state all --search "in:title \"${title}\"" --json title --jq 'length')"
+          if [ "${existing}" != "0" ]; then
+            echo "Issue \"${title}\" already exists — skipping."
+            exit 0
+          fi
+          gh issue create \
+            --title "${title}" \
+            --body "$(cat <<BODY
+          @claude A new upstream release of \`vscode-material-icon-theme\` is available.
+
+          - Currently pinned: \`${CURRENT}\`
+          - Latest release: \`${LATEST_TAG}\`
+
+          Please bump the upstream version to \`${LATEST_TAG}\` by following the
+          **bump-upstream** skill (\`.claude/skills/bump-upstream/SKILL.md\`), then
+          open a pull request against \`main\`. Do **not** merge — a human will review.
+          BODY
+          )"
