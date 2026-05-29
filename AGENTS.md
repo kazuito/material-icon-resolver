@@ -63,7 +63,6 @@ pnpm format          # biome format --write
 ## Safety / Gotchas
 
 - `package.json#exports` uses per-condition types (`import.types` → `.d.mts`, `require.types` → `.d.cts`) for proper dual-package type resolution. `typesVersions` is set so legacy `--moduleResolution node` consumers can resolve `./file` and `./folder` subpaths. If you change build entry names, output extensions, or declaration filenames, update `exports` and `typesVersions` to match. Validate with `pnpm dlx @arethetypeswrong/cli --pack .` (all entries should be 🟢 across node10/node16/bundler).
-- pnpm needs `pnpm.onlyBuiltDependencies: ["esbuild"]` in `package.json` to allow esbuild's postinstall (used by tsx and tsdown). Removing it makes `pnpm install` fail with `ERR_PNPM_IGNORED_BUILDS`.
 - `tsdown.config.ts` has `minify: true` for size; debugging the bundle requires reading source instead.
 - Default `version` in `ResolveMaterialIconOptions` is pinned to `metadata.upstreamVersion`, not `latest`. Users opt into `latest` explicitly. Don't change this default — the generated association table only matches the pinned version's SVG inventory.
 - The validator fetches the tarball from `registry.npmjs.org` directly (it does not call `npm pack`, which previously hit local cache permission issues).
