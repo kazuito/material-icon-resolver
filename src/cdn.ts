@@ -16,14 +16,14 @@ export const MATERIAL_ICON_THEME_PACKAGE = "material-icon-theme";
  *
  * @example
  * ```ts
- * buildCdnUrl({ cdn: "jsdelivr", version: "5.35.0", filename: "typescript.svg" });
- * // "https://cdn.jsdelivr.net/npm/material-icon-theme@5.35.0/icons/typescript.svg"
+ * buildCdnUrl({ cdn: "jsdelivr", version: "5.36.1", filename: "typescript.svg" });
+ * // "https://cdn.jsdelivr.net/npm/material-icon-theme@5.36.1/icons/typescript.svg"
  * ```
  */
 export function buildCdnUrl(input: {
   /** CDN provider. */
   cdn: CdnProvider;
-  /** `material-icon-theme` package version (e.g. `"5.35.0"` or `"latest"`). */
+  /** `material-icon-theme` package version (e.g. `"5.36.1"` or `"latest"`). */
   version: string;
   /** SVG filename, including the `.svg` extension. */
   filename: string;

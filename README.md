@@ -21,7 +21,7 @@ resolveMaterialIcon("src/index.ts");
 // {
 //   name: "typescript",
 //   filename: "typescript.svg",
-//   cdnUrl: "https://cdn.jsdelivr.net/npm/material-icon-theme@5.35.0/icons/typescript.svg",
+//   cdnUrl: "https://cdn.jsdelivr.net/npm/material-icon-theme@5.36.1/icons/typescript.svg",
 //   type: "file",
 //   source: "fileExtensions",
 // }
@@ -61,7 +61,7 @@ getMaterialIconName("package.json");
 // "nodejs"
 
 getMaterialIconCdnUrl("package.json");
-// "https://cdn.jsdelivr.net/npm/material-icon-theme@5.35.0/icons/nodejs.svg"
+// "https://cdn.jsdelivr.net/npm/material-icon-theme@5.36.1/icons/nodejs.svg"
 ```
 
 ## Split entries

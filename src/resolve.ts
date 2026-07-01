@@ -34,7 +34,7 @@ import type {
  * // {
  * //   name: "typescript",
  * //   filename: "typescript.svg",
- * //   cdnUrl: "https://cdn.jsdelivr.net/npm/material-icon-theme@5.35.0/icons/typescript.svg",
+ * //   cdnUrl: "https://cdn.jsdelivr.net/npm/material-icon-theme@5.36.1/icons/typescript.svg",
  * //   type: "file",
  * //   source: "fileExtensions",
  * // }
@@ -150,7 +150,7 @@ export function getMaterialIconName(
  * @example
  * ```ts
  * getMaterialIconCdnUrl("package.json");
- * // "https://cdn.jsdelivr.net/npm/material-icon-theme@5.35.0/icons/nodejs.svg"
+ * // "https://cdn.jsdelivr.net/npm/material-icon-theme@5.36.1/icons/nodejs.svg"
  *
  * getMaterialIconCdnUrl("src/index.ts", { baseUrl: "/icons" });
  * // "/icons/typescript.svg"
