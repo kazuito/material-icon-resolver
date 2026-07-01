@@ -1,12 +1,12 @@
 name: Watch upstream
 
-# Detect new vscode-material-icon-theme *release tags* and open an issue that
-# asks Claude to perform the bump. Pairs with claude.yml, which picks up the
-# @claude mention and runs the actual update via the bump-upstream skill.
+# Detect new vscode-material-icon-theme *release tags* and open an issue
+# noting that a bump is available. The bump itself is done manually via the
+# bump-upstream skill (.claude/skills/bump-upstream/SKILL.md).
 
 on:
   schedule:
-    - cron: "0 6 * * 1" # Mondays 06:00 UTC
+    - cron: "0 6 * * *" # daily 06:00 UTC
   workflow_dispatch: # allow manual runs for testing
 
 permissions:
@@ -21,6 +21,7 @@ jobs:
   check:
     name: Check for new upstream release
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -64,13 +65,12 @@ jobs:
           gh issue create \
             --title "${title}" \
             --body "$(cat <<BODY
-          @claude A new upstream release of \`vscode-material-icon-theme\` is available.
+          A new upstream release of \`vscode-material-icon-theme\` is available.
 
           - Currently pinned: \`${CURRENT}\`
           - Latest release: \`${LATEST_TAG}\`
 
-          Please bump the upstream version to \`${LATEST_TAG}\` by following the
-          **bump-upstream** skill (\`.claude/skills/bump-upstream/SKILL.md\`), then
-          open a pull request against \`main\`. Do **not** merge — a human will review.
+          Bump the upstream version to \`${LATEST_TAG}\` by following the
+          **bump-upstream** skill (\`.claude/skills/bump-upstream/SKILL.md\`).
           BODY
           )"
