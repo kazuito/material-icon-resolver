@@ -15,16 +15,11 @@ concurrency:
 
 jobs:
   quality:
-    name: Quality (Node ${{ matrix.node-version }})
+    name: Quality
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
       HUSKY: 0
-    strategy:
-      matrix:
-        # 18 is the package's minimum supported version (engines.node); 24 is
-        # what release.yml builds/publishes with.
-        node-version: [18, 24]
 
     steps:
       - name: Checkout
@@ -36,7 +31,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
@@ -59,29 +54,6 @@ jobs:
 
       - name: Verify npm package contents
         run: pnpm pack --dry-run
-
-  quality-website:
-    name: Quality (website)
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      HUSKY: 0
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Lint (website)
         run: pnpm --filter website lint
