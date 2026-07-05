@@ -65,6 +65,24 @@ describe("resolveMaterialIcon (file)", () => {
     expect(resolveMaterialIcon("a.swift")?.name).toBe("swift");
   });
 
+  it("resolves associations from the VS Code built-in language map", () => {
+    expect(resolveMaterialIcon(".bashrc")?.name).toBe("console");
+    expect(resolveMaterialIcon(".vscodeignore")?.name).toBe("git");
+    expect(resolveMaterialIcon("paper.sty")?.name).toBe("tex");
+  });
+
+  it("resolves associations from the residual language-id map", () => {
+    expect(resolveMaterialIcon("application.yml")?.name).toBe("yaml");
+    expect(resolveMaterialIcon("app.service")?.name).toBe("systemd");
+    expect(resolveMaterialIcon("Chart.yaml")?.name).toBe("helm");
+    expect(resolveMaterialIcon(".env")?.name).toBe("settings");
+    expect(resolveMaterialIcon(".gitattributes")?.name).toBe("git");
+  });
+
+  it("resolves ids covered only by the id-as-extension fallback", () => {
+    expect(resolveMaterialIcon("model.matlab")?.name).toBe("matlab");
+  });
+
   it("uses languageId option as a fallback when path lookup misses", () => {
     const r = resolveMaterialIcon("foo.unknown-ext", { languageId: "rust" });
     expect(r?.name).toBe("rust");

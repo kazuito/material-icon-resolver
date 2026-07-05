@@ -84,6 +84,7 @@
   "scripts": {
     "build": "tsdown",
     "generate": "tsx scripts/generate.ts",
+    "sync-language-ids": "tsx scripts/sync-language-ids.ts",
     "validate-icons": "tsx scripts/validate-icons.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

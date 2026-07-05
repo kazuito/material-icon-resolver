@@ -1,0 +1,716 @@
+{
+  "vscodeTag": "1.127.0",
+  "languages": {
+    "bat": {
+      "extensions": [
+        "bat",
+        "cmd"
+      ]
+    },
+    "bibtex": {
+      "extensions": [
+        "bib"
+      ]
+    },
+    "c": {
+      "extensions": [
+        "c",
+        "i"
+      ]
+    },
+    "chatagent": {
+      "extensions": [
+        "agent.md",
+        "chatmode.md"
+      ]
+    },
+    "clojure": {
+      "extensions": [
+        "clj",
+        "cljc",
+        "cljs",
+        "cljx",
+        "clojure",
+        "edn"
+      ]
+    },
+    "coffeescript": {
+      "extensions": [
+        "coffee",
+        "cson",
+        "iced"
+      ]
+    },
+    "cpp": {
+      "extensions": [
+        "c++",
+        "c++m",
+        "cc",
+        "ccm",
+        "cpp",
+        "cppm",
+        "cxx",
+        "cxxm",
+        "h",
+        "h++",
+        "h.in",
+        "hh",
+        "hpp",
+        "hpp.in",
+        "hxx",
+        "ii",
+        "inl",
+        "ino",
+        "ipp",
+        "ixx",
+        "tpp",
+        "txx"
+      ]
+    },
+    "csharp": {
+      "extensions": [
+        "cake",
+        "cs",
+        "csx"
+      ]
+    },
+    "css": {
+      "extensions": [
+        "css"
+      ]
+    },
+    "cuda-cpp": {
+      "extensions": [
+        "cu",
+        "cuh"
+      ]
+    },
+    "dart": {
+      "extensions": [
+        "dart"
+      ]
+    },
+    "diff": {
+      "extensions": [
+        "diff",
+        "patch",
+        "rej"
+      ]
+    },
+    "dockerfile": {
+      "extensions": [
+        "containerfile",
+        "dockerfile"
+      ],
+      "fileNames": [
+        "Containerfile",
+        "Dockerfile"
+      ]
+    },
+    "dotenv": {
+      "extensions": [
+        "env"
+      ],
+      "fileNames": [
+        ".env",
+        ".flaskenv",
+        "user-dirs.dirs"
+      ]
+    },
+    "fsharp": {
+      "extensions": [
+        "fs",
+        "fsi",
+        "fsscript",
+        "fsx"
+      ]
+    },
+    "git-commit": {
+      "fileNames": [
+        "COMMIT_EDITMSG",
+        "MERGE_MSG"
+      ]
+    },
+    "git-rebase": {
+      "fileNames": [
+        "git-rebase-todo"
+      ]
+    },
+    "go": {
+      "extensions": [
+        "go"
+      ]
+    },
+    "groovy": {
+      "extensions": [
+        "gradle",
+        "groovy",
+        "gvy",
+        "jenkinsfile",
+        "nf"
+      ],
+      "fileNames": [
+        "Jenkinsfile"
+      ]
+    },
+    "handlebars": {
+      "extensions": [
+        "handlebars",
+        "hbs",
+        "hjs"
+      ]
+    },
+    "hlsl": {
+      "extensions": [
+        "cginc",
+        "compute",
+        "fx",
+        "fxh",
+        "hlsl",
+        "hlsli",
+        "psh",
+        "vsh"
+      ]
+    },
+    "html": {
+      "extensions": [
+        "asp",
+        "aspx",
+        "ejs",
+        "htm",
+        "html",
+        "jshtm",
+        "jsp",
+        "mdoc",
+        "rhtml",
+        "shtml",
+        "volt",
+        "xht",
+        "xhtml"
+      ]
+    },
+    "ignore": {
+      "extensions": [
+        "git-blame-ignore-revs",
+        "gitignore",
+        "gitignore_global",
+        "npmignore"
+      ],
+      "fileNames": [
+        ".vscodeignore"
+      ]
+    },
+    "ini": {
+      "extensions": [
+        "ini"
+      ]
+    },
+    "instructions": {
+      "extensions": [
+        "copilot-instructions.md",
+        "instructions.md"
+      ]
+    },
+    "jade": {
+      "extensions": [
+        "jade",
+        "pug"
+      ]
+    },
+    "java": {
+      "extensions": [
+        "jav",
+        "java"
+      ]
+    },
+    "javascript": {
+      "extensions": [
+        "cjs",
+        "es6",
+        "js",
+        "mjs",
+        "pac"
+      ],
+      "fileNames": [
+        "jakefile"
+      ]
+    },
+    "javascriptreact": {
+      "extensions": [
+        "jsx"
+      ]
+    },
+    "json": {
+      "extensions": [
+        "bowerrc",
+        "code-profile",
+        "css.map",
+        "geojson",
+        "har",
+        "ipynb",
+        "js.map",
+        "jscsrc",
+        "jslintrc",
+        "json",
+        "jsonld",
+        "ts.map",
+        "tsbuildinfo",
+        "vuerc",
+        "webmanifest"
+      ],
+      "fileNames": [
+        ".watchmanconfig",
+        "composer.lock"
+      ]
+    },
+    "jsonc": {
+      "extensions": [
+        "babelrc",
+        "code-workspace",
+        "color-theme.json",
+        "eslintrc",
+        "eslintrc.json",
+        "hintrc",
+        "icon-theme.json",
+        "jsfmtrc",
+        "jshintrc",
+        "jsonc",
+        "language-configuration.json",
+        "swcrc",
+        "toolset.jsonc"
+      ],
+      "fileNames": [
+        ".babelrc.json",
+        ".devcontainer.json",
+        ".ember-cli",
+        "argv.json",
+        "babel.config.json",
+        "bun.lock",
+        "devcontainer.json",
+        "extensions.json",
+        "jsconfig.json",
+        "keybindings.json",
+        "launch.json",
+        "mcp.json",
+        "profiles.json",
+        "settings.json",
+        "tasks.json",
+        "tsconfig.json",
+        "typedoc.json"
+      ]
+    },
+    "jsonl": {
+      "extensions": [
+        "jsonl",
+        "ndjson"
+      ]
+    },
+    "julia": {
+      "extensions": [
+        "jl"
+      ]
+    },
+    "juliamarkdown": {
+      "extensions": [
+        "jmd"
+      ]
+    },
+    "latex": {
+      "extensions": [
+        "ctx",
+        "ltx",
+        "tex"
+      ]
+    },
+    "less": {
+      "extensions": [
+        "less"
+      ]
+    },
+    "log": {
+      "extensions": [
+        "log"
+      ]
+    },
+    "lua": {
+      "extensions": [
+        "lua"
+      ]
+    },
+    "makefile": {
+      "extensions": [
+        "mak",
+        "mk"
+      ],
+      "fileNames": [
+        "GNUmakefile",
+        "Makefile",
+        "OCamlMakefile",
+        "makefile"
+      ]
+    },
+    "markdown": {
+      "extensions": [
+        "copilotmd",
+        "litcoffee",
+        "markdn",
+        "markdown",
+        "md",
+        "mdown",
+        "mdtext",
+        "mdtxt",
+        "mdwn",
+        "mkd",
+        "mkdn",
+        "ron",
+        "ronn",
+        "workbook"
+      ]
+    },
+    "objective-c": {
+      "extensions": [
+        "m"
+      ]
+    },
+    "objective-cpp": {
+      "extensions": [
+        "mm"
+      ]
+    },
+    "perl": {
+      "extensions": [
+        "pl",
+        "pm",
+        "pod",
+        "psgi",
+        "t"
+      ]
+    },
+    "php": {
+      "extensions": [
+        "ctp",
+        "php",
+        "php4",
+        "php5",
+        "phtml"
+      ]
+    },
+    "powershell": {
+      "extensions": [
+        "ps1",
+        "psd1",
+        "psm1",
+        "psrc",
+        "pssc"
+      ]
+    },
+    "prompt": {
+      "extensions": [
+        "prompt.md"
+      ]
+    },
+    "properties": {
+      "extensions": [
+        "cfg",
+        "conf",
+        "directory",
+        "editorconfig",
+        "gitattributes",
+        "gitconfig",
+        "gitmodules",
+        "npmrc",
+        "properties",
+        "repo"
+      ],
+      "fileNames": [
+        "gitconfig"
+      ]
+    },
+    "python": {
+      "extensions": [
+        "cpy",
+        "gyp",
+        "gypi",
+        "ipy",
+        "py",
+        "pyi",
+        "pyt",
+        "pyw",
+        "rpy"
+      ],
+      "fileNames": [
+        "SConscript",
+        "SConstruct"
+      ]
+    },
+    "r": {
+      "extensions": [
+        "r",
+        "rhistory",
+        "rprofile",
+        "rt"
+      ]
+    },
+    "raku": {
+      "extensions": [
+        "nqp",
+        "p6",
+        "pl6",
+        "pm6",
+        "raku",
+        "rakudoc",
+        "rakumod",
+        "rakutest"
+      ]
+    },
+    "razor": {
+      "extensions": [
+        "cshtml",
+        "razor"
+      ]
+    },
+    "restructuredtext": {
+      "extensions": [
+        "rst"
+      ]
+    },
+    "ruby": {
+      "extensions": [
+        "erb",
+        "gemspec",
+        "podspec",
+        "rake",
+        "rb",
+        "rbi",
+        "rbx",
+        "rjs",
+        "ru"
+      ],
+      "fileNames": [
+        "appfile",
+        "appraisals",
+        "berksfile",
+        "berksfile.lock",
+        "brewfile",
+        "capfile",
+        "cheffile",
+        "dangerfile",
+        "deliverfile",
+        "fastfile",
+        "gemfile",
+        "guardfile",
+        "gymfile",
+        "hobofile",
+        "matchfile",
+        "podfile",
+        "puppetfile",
+        "rakefile",
+        "rantfile",
+        "scanfile",
+        "snapfile",
+        "thorfile",
+        "vagrantfile"
+      ]
+    },
+    "rust": {
+      "extensions": [
+        "rs"
+      ]
+    },
+    "scss": {
+      "extensions": [
+        "scss"
+      ]
+    },
+    "search-result": {
+      "extensions": [
+        "code-search"
+      ]
+    },
+    "shaderlab": {
+      "extensions": [
+        "shader"
+      ]
+    },
+    "shellscript": {
+      "extensions": [
+        "bash",
+        "bash_aliases",
+        "bash_login",
+        "bash_logout",
+        "bash_profile",
+        "bashrc",
+        "csh",
+        "cshrc",
+        "ebuild",
+        "eclass",
+        "fish",
+        "ksh",
+        "profile",
+        "sh",
+        "tcshrc",
+        "xprofile",
+        "xsession",
+        "xsessionrc",
+        "yash_profile",
+        "yashrc",
+        "zlogin",
+        "zlogout",
+        "zprofile",
+        "zsh",
+        "zsh-theme",
+        "zshenv",
+        "zshrc"
+      ],
+      "fileNames": [
+        ".envrc",
+        ".hushlogin",
+        "APKBUILD",
+        "PKGBUILD",
+        "bashrc_Apple_Terminal",
+        "zlogin",
+        "zlogout",
+        "zprofile",
+        "zshenv",
+        "zshrc",
+        "zshrc_Apple_Terminal"
+      ]
+    },
+    "skill": {
+      "fileNames": [
+        "SKILL.md"
+      ]
+    },
+    "snippets": {
+      "extensions": [
+        "code-snippets"
+      ]
+    },
+    "sql": {
+      "extensions": [
+        "dsql",
+        "sql"
+      ]
+    },
+    "swift": {
+      "extensions": [
+        "swift"
+      ]
+    },
+    "tex": {
+      "extensions": [
+        "bbx",
+        "cbx",
+        "cls",
+        "sty"
+      ]
+    },
+    "typescript": {
+      "extensions": [
+        "cts",
+        "mts",
+        "ts"
+      ]
+    },
+    "typescriptreact": {
+      "extensions": [
+        "tsx"
+      ]
+    },
+    "vb": {
+      "extensions": [
+        "bas",
+        "brs",
+        "vb",
+        "vba",
+        "vbs"
+      ]
+    },
+    "xml": {
+      "extensions": [
+        "ascx",
+        "atom",
+        "axaml",
+        "axml",
+        "bpmn",
+        "cpt",
+        "csl",
+        "csproj",
+        "csproj.user",
+        "dita",
+        "ditamap",
+        "dtd",
+        "dtml",
+        "ent",
+        "fsproj",
+        "fxml",
+        "iml",
+        "isml",
+        "jmx",
+        "launch",
+        "menu",
+        "mod",
+        "mxml",
+        "nuspec",
+        "opml",
+        "owl",
+        "proj",
+        "props",
+        "pt",
+        "publishsettings",
+        "pubxml",
+        "pubxml.user",
+        "rbxlx",
+        "rbxmx",
+        "rdf",
+        "rng",
+        "rss",
+        "shproj",
+        "slnx",
+        "storyboard",
+        "svg",
+        "targets",
+        "tld",
+        "tmx",
+        "vbproj",
+        "vbproj.user",
+        "vcxproj",
+        "vcxproj.filters",
+        "wixproj",
+        "wsdl",
+        "wxi",
+        "wxl",
+        "wxs",
+        "xaml",
+        "xbl",
+        "xib",
+        "xlf",
+        "xliff",
+        "xml",
+        "xoml",
+        "xpdl",
+        "xsd",
+        "xul"
+      ]
+    },
+    "xsl": {
+      "extensions": [
+        "xsl",
+        "xslt"
+      ]
+    },
+    "yaml": {
+      "extensions": [
+        "cff",
+        "eyaml",
+        "eyml",
+        "winget",
+        "yaml",
+        "yaml-tmlanguage",
+        "yaml-tmpreferences",
+        "yaml-tmtheme",
+        "yml"
+      ]
+    }
+  }
+}

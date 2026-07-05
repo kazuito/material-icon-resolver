@@ -13,14 +13,14 @@
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "includes": ["**", "!src/generated/**"]
+    "includes": ["**", "!src/generated/**", "!scripts/generated/**"]
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true
     },
-    "includes": ["**", "!src/generated/**"]
+    "includes": ["**", "!src/generated/**", "!scripts/generated/**"]
   },
   "assist": {
     "enabled": true,
@@ -29,7 +29,7 @@
         "organizeImports": "on"
       }
     },
-    "includes": ["**", "!src/generated/**"]
+    "includes": ["**", "!src/generated/**", "!scripts/generated/**"]
   },
   "javascript": {
     "formatter": {

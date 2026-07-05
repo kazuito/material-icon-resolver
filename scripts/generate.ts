@@ -4,9 +4,18 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import { languageIdAssociations } from "./language-id-extensions.ts";
+import {
+  type LanguageIdAssoc,
+  languageIdAssociations,
+} from "./language-id-extensions.ts";
 
 const DEFAULT_ACTIVE_ICON_PACK = "angular";
+const VSCODE_LANGUAGE_MAP_PATH = "scripts/generated/vscode-language-map.json";
+
+type VscodeLanguageMap = {
+  vscodeTag: string;
+  languages: Record<string, LanguageIdAssoc>;
+};
 const FOLDER_THEME = "specific";
 const SUBMODULE_PATH = "vendor/vscode-material-icon-theme";
 
@@ -103,6 +112,7 @@ function buildFileMaps(
     enabledFor?: string[];
     clone?: unknown;
   }>,
+  vscodeLanguages: Record<string, LanguageIdAssoc>,
 ) {
   const fileNames: Record<string, string> = {};
   const fileNamesWithPath: Record<string, string> = {};
@@ -130,46 +140,100 @@ function buildFileMaps(
     }
   }
 
-  // Merge in associations derived from VS Code language IDs.
-  // Explicit fileExtensions / fileNames from fileIcons.ts take precedence.
+  // Merge in associations derived from VS Code language IDs, two layers:
+  // vscode-language-map.json (built-ins, synced from a pinned VS Code tag)
+  // first, then the residual hand-maintained map for ids defined by
+  // third-party extensions. Explicit fileExtensions / fileNames from
+  // fileIcons.ts take precedence over both; first write wins throughout.
+  const addAssoc = (assoc: LanguageIdAssoc, iconName: string): number => {
+    let added = 0;
+    for (const raw of assoc.extensions ?? []) {
+      const key = raw.toLowerCase();
+      if (!(key in fileExtensions)) {
+        fileExtensions[key] = iconName;
+        added++;
+      }
+    }
+    for (const raw of assoc.fileNames ?? []) {
+      const key = raw.toLowerCase();
+      if (key.includes("/")) {
+        if (!(key in fileNamesWithPath)) {
+          fileNamesWithPath[key] = iconName;
+          added++;
+        }
+      } else if (!(key in fileNames)) {
+        fileNames[key] = iconName;
+        added++;
+      }
+    }
+    return added;
+  };
+
   const seenLanguageIds = new Set<string>();
-  const missingLanguageIds: string[] = [];
+  const shadowedResidualIds: string[] = [];
+  const unsourced: Array<{ id: string; iconName: string }> = [];
   for (const icon of languageIcons) {
     if (!isEnabled(icon)) continue;
     for (const id of icon.ids) {
       seenLanguageIds.add(id);
-      const assoc = languageIdAssociations[id];
-      if (!assoc) {
-        missingLanguageIds.push(id);
+      const builtin = vscodeLanguages[id];
+      const residual = languageIdAssociations[id];
+      if (!builtin && !residual) {
+        unsourced.push({ id, iconName: icon.name });
         continue;
       }
-      for (const raw of assoc.extensions ?? []) {
-        const key = raw.toLowerCase();
-        if (!(key in fileExtensions)) fileExtensions[key] = icon.name;
-      }
-      for (const raw of assoc.fileNames ?? []) {
-        const key = raw.toLowerCase();
-        if (key.includes("/")) {
-          if (!(key in fileNamesWithPath)) fileNamesWithPath[key] = icon.name;
-        } else if (!(key in fileNames)) {
-          fileNames[key] = icon.name;
-        }
+      if (builtin) addAssoc(builtin, icon.name);
+      if (residual && addAssoc(residual, icon.name) === 0) {
+        shadowedResidualIds.push(id);
       }
     }
   }
 
-  // Warn about language IDs in our static map that upstream no longer references.
+  // An id without a source only matters if its icon is otherwise unreachable
+  // through the path-based maps (most unsourced ids alias icons that explicit
+  // upstream entries already cover). For those, fall back to treating the id
+  // itself as a file extension so a brand-new upstream language id degrades
+  // to a plausible association instead of silently missing.
+  const reachableIcons = new Set([
+    ...Object.values(fileNames),
+    ...Object.values(fileNamesWithPath),
+    ...Object.values(fileExtensions),
+  ]);
+  const EXTENSION_LIKE_ID = /^[a-z0-9_+-]+$/;
+  const fallbackIds: string[] = [];
+  const unresolvedIds: string[] = [];
+  for (const { id, iconName } of unsourced) {
+    if (reachableIcons.has(iconName)) continue;
+    if (EXTENSION_LIKE_ID.test(id) && !(id in fileExtensions)) {
+      fileExtensions[id] = iconName;
+      reachableIcons.add(iconName);
+      fallbackIds.push(id);
+    } else {
+      unresolvedIds.push(id);
+    }
+  }
+
   const stale = Object.keys(languageIdAssociations).filter(
     (id) => !seenLanguageIds.has(id),
   );
   if (stale.length > 0) {
     console.warn(
-      `note: ${stale.length} language id(s) in language-id-extensions.ts are not referenced by upstream languageIcons.ts: ${stale.join(", ")}`,
+      `note: ${stale.length} language id(s) in language-id-extensions.ts are not referenced by upstream languageIcons.ts (delete them): ${stale.join(", ")}`,
     );
   }
-  if (missingLanguageIds.length > 0) {
+  if (shadowedResidualIds.length > 0) {
     console.warn(
-      `note: ${missingLanguageIds.length} upstream language id(s) have no entry in language-id-extensions.ts: ${[...new Set(missingLanguageIds)].sort().join(", ")}`,
+      `note: ${shadowedResidualIds.length} language-id-extensions.ts entr(ies) are fully shadowed by explicit upstream entries or vscode-language-map.json (delete them): ${shadowedResidualIds.sort().join(", ")}`,
+    );
+  }
+  if (fallbackIds.length > 0) {
+    console.warn(
+      `note: ${fallbackIds.length} upstream language id(s) have no association source; using the id itself as a file extension. Add them to language-id-extensions.ts or re-run 'pnpm sync-language-ids': ${fallbackIds.sort().join(", ")}`,
+    );
+  }
+  if (unresolvedIds.length > 0) {
+    console.warn(
+      `note: ${unresolvedIds.length} upstream language id(s) have no association source and their icon is only reachable via the languageId option: ${unresolvedIds.sort().join(", ")}`,
     );
   }
 
@@ -578,7 +642,18 @@ async function main() {
   const [{ fileIcons }, { folderIcons }, { languageIcons }] =
     await loadUpstream(repo);
 
-  const fileMaps = buildFileMaps(fileIcons, languageIcons);
+  const vscodeLanguageMap = JSON.parse(
+    readFileSync(resolve(root, VSCODE_LANGUAGE_MAP_PATH), "utf8"),
+  ) as VscodeLanguageMap;
+  console.log(
+    `vscode language map: tag ${vscodeLanguageMap.vscodeTag}, ${Object.keys(vscodeLanguageMap.languages).length} ids`,
+  );
+
+  const fileMaps = buildFileMaps(
+    fileIcons,
+    languageIcons,
+    vscodeLanguageMap.languages,
+  );
   const languageIds = buildLanguageIdMap(languageIcons);
   const theme = folderIcons.find((t) => t.name === FOLDER_THEME);
   if (!theme) throw new Error(`folder theme '${FOLDER_THEME}' not found`);
