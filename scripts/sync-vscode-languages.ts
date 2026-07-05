@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 // Regenerates scripts/generated/vscode-language-map.json from the
 // `contributes.languages` sections of VS Code's built-in extensions at a
-// pinned release tag. Bump VSCODE_TAG and re-run `pnpm sync-language-ids`
+// pinned release tag. Bump VSCODE_TAG and re-run `pnpm sync-vscode-languages`
 // to pick up new built-in language associations.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -23,7 +23,7 @@ type VscodePackageJson = {
 
 async function fetchJson<T>(url: string): Promise<T> {
   const headers: Record<string, string> = {
-    "User-Agent": "material-icon-resolver sync-language-ids",
+    "User-Agent": "material-icon-resolver sync-vscode-languages",
   };
   const token = process.env.GITHUB_TOKEN;
   if (token) headers.Authorization = `Bearer ${token}`;

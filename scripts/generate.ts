@@ -228,7 +228,7 @@ function buildFileMaps(
   }
   if (fallbackIds.length > 0) {
     console.warn(
-      `note: ${fallbackIds.length} upstream language id(s) have no association source; using the id itself as a file extension. Add them to language-id-extensions.ts or re-run 'pnpm sync-language-ids': ${fallbackIds.sort().join(", ")}`,
+      `note: ${fallbackIds.length} upstream language id(s) have no association source; using the id itself as a file extension. Add them to language-id-extensions.ts or re-run 'pnpm sync-vscode-languages': ${fallbackIds.sort().join(", ")}`,
     );
   }
   if (unresolvedIds.length > 0) {

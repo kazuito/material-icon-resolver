@@ -14,7 +14,7 @@ Resolve VS Code Material Icon Theme icon names, SVG filenames, and CDN URLs from
 - `src/types.ts` — public type definitions
 - `src/generated/*.ts` — **auto-generated; do not edit by hand**. Re-run `pnpm generate`.
 - `scripts/generate.ts` — reads upstream `vscode-material-icon-theme` from the `vendor/` git submodule and rebuilds `src/generated/*.ts`
-- `scripts/sync-language-ids.ts` — regenerates `scripts/generated/vscode-language-map.json` (language id → extensions/fileNames) from the `contributes.languages` of VS Code built-in extensions at a pinned tag
+- `scripts/sync-vscode-languages.ts` — regenerates `scripts/generated/vscode-language-map.json` (language id → extensions/fileNames) from the `contributes.languages` of VS Code built-in extensions at a pinned tag
 - `scripts/language-id-extensions.ts` — residual language-id associations from third-party extensions; each entry cites its origin
 - `vendor/vscode-material-icon-theme/` — git submodule pinned to a specific upstream release tag; the source of truth for which version is generated
 - `scripts/validate-icons.ts` — fetches the published npm tarball and asserts every referenced SVG name actually exists
@@ -31,7 +31,7 @@ pnpm typecheck       # tsc --noEmit
 pnpm test            # vitest run
 pnpm build           # tsdown → ESM/CJS outputs for root, file, and folder entries
 pnpm generate        # regenerate src/generated/*.ts from the pinned submodule
-pnpm sync-language-ids  # refresh scripts/generated/vscode-language-map.json from the pinned VS Code tag
+pnpm sync-vscode-languages  # refresh scripts/generated/vscode-language-map.json from the pinned VS Code tag, then regenerate
 pnpm validate-icons  # fetch npm tarball, check every referenced SVG exists
 pnpm lint            # biome lint
 pnpm format          # biome format --write
@@ -40,6 +40,15 @@ pnpm format          # biome format --write
 ## Workflow Expectations
 
 - After editing source, run `pnpm typecheck && pnpm test && pnpm build` before declaring done.
+- When to run which regeneration command:
+
+  | You changed | Run |
+  |---|---|
+  | `vendor/` submodule (icon theme bump) | `pnpm generate` → `pnpm validate-icons` → `pnpm test` |
+  | `VSCODE_TAG` in `scripts/sync-vscode-languages.ts` | `pnpm sync-vscode-languages` (regenerates automatically) → `pnpm test` |
+  | `scripts/language-id-extensions.ts` (residual map) | `pnpm generate` → `pnpm test` |
+
+  Rule of thumb: changed any generator input → `pnpm generate`; want newer VS Code language data → `pnpm sync-vscode-languages`, which chains `pnpm generate` for you.
 - After bumping the upstream version: `pnpm generate` → `pnpm validate-icons` → `pnpm test` → update `metadata.upstreamVersion` consumers.
 - Never hand-edit `src/generated/*.ts`; treat them like build artifacts that happen to be checked in.
 - Internal relative imports must include the `.ts` extension (`./resolve.ts`, not `./resolve`). `tsconfig.json` enables `allowImportingTsExtensions` + `rewriteRelativeImportExtensions`; tsdown rewrites them at build time.
@@ -60,7 +69,7 @@ pnpm format          # biome format --write
 - Keep file-only and folder-only entry points independent: `src/file.ts` must not import `src/generated/folder-icons.ts`, and `src/folder.ts` must not import `src/generated/file-icons.ts`.
 - Icons with `clone: { ... }` in upstream are **skipped** by the generator — upstream generates those SVGs at runtime and they aren't published in the npm package. Don't try to add them back.
 - Default `activeIconPack` is `"angular"` (matches upstream `defaultConfig`). Icons gated by other packs (vue, react, qwik, …) are excluded.
-- VS Code language IDs ARE used. Upstream `languageIcons.ts` is read at generate time and each language id is expanded to file extensions / fileNames through layered sources, first write wins: (1) explicit `fileIcons.ts#fileExtensions` / `fileNames` entries, (2) `scripts/generated/vscode-language-map.json` — synced from the `contributes.languages` of VS Code's built-in extensions at the tag pinned in `scripts/sync-language-ids.ts` (`pnpm sync-language-ids` to refresh; bump `VSCODE_TAG` there for a newer VS Code), (3) the residual hand map `scripts/language-id-extensions.ts` for ids defined by third-party marketplace extensions — every entry must cite its origin (`via … — <url>` or `curated: …`), (4) for ids with no source whose icon would otherwise be unreachable, the id itself is used as a file extension (fallback). `pnpm generate` warns when a residual entry goes stale or fully shadowed (delete it) and when a new upstream id lands in the fallback (add a sourced entry or re-sync).
+- VS Code language IDs ARE used. Upstream `languageIcons.ts` is read at generate time and each language id is expanded to file extensions / fileNames through layered sources, first write wins: (1) explicit `fileIcons.ts#fileExtensions` / `fileNames` entries, (2) `scripts/generated/vscode-language-map.json` — synced from the `contributes.languages` of VS Code's built-in extensions at the tag pinned in `scripts/sync-vscode-languages.ts` (`pnpm sync-vscode-languages` to refresh; bump `VSCODE_TAG` there for a newer VS Code), (3) the residual hand map `scripts/language-id-extensions.ts` for ids defined by third-party marketplace extensions — every entry must cite its origin (`via … — <url>` or `curated: …`), (4) for ids with no source whose icon would otherwise be unreachable, the id itself is used as a file extension (fallback). `pnpm generate` warns when a residual entry goes stale or fully shadowed (delete it) and when a new upstream id lands in the fallback (add a sourced entry or re-sync).
 - Custom icon associations, light/highContrast variants, and clone icons remain out of scope (see `PLAN.md` §4).
 
 ## Safety / Gotchas

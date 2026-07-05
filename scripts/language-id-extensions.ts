@@ -6,7 +6,7 @@
  * 1. Upstream `fileIcons.ts` explicit entries (always win).
  * 2. `scripts/generated/vscode-language-map.json` — synced from the
  *    `contributes.languages` sections of VS Code's built-in extensions at a
- *    pinned release tag via `pnpm sync-language-ids`.
+ *    pinned release tag via `pnpm sync-vscode-languages`.
  *
  * Every entry here is defined by a third-party marketplace extension (or is
  * a curated supplement) and must cite its origin in a comment:
